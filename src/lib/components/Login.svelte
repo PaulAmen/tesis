@@ -31,8 +31,8 @@
 
 <div class="login-container">
 	<div class="login-card">
-		<h1>Tesis UIIX</h1>
-		<p class="subtitle">Gestor de Citas</p>
+		<h1>Tesis</h1>
+		<p class="subtitle">Asistente de Tesis Doctoral</p>
 
 		{#if error}
 			<p class="error">{error}</p>
@@ -62,11 +62,16 @@
 		width: 100%;
 		max-width: 400px;
 		text-align: center;
-		padding: 32px;
+		padding: 40px;
 		background: var(--bg-surface);
 		border: 1px solid var(--border);
 		border-radius: var(--radius-lg);
 		box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+	}
+	.logo-wrapper {
+		margin-bottom: 24px;
+		display: flex;
+		justify-content: center;
 	}
 	h1 {
 		font-size: 2.25rem;

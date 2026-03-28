@@ -107,9 +107,11 @@
 		<textarea id="notas" placeholder="Anotaciones, ideas..." bind:value={notas} rows="3"></textarea>
 	</div>
 
-	<button class="btn btn-primary" type="submit" disabled={guardando}>
-		{guardando ? 'Guardando...' : 'Guardar cita'}
-	</button>
+	<div class="form-actions">
+		<button class="btn btn-primary" type="submit" disabled={guardando}>
+			{guardando ? 'Guardando...' : 'Guardar cita'}
+		</button>
+	</div>
 </form>
 
 <style>
@@ -153,6 +155,31 @@
 		cursor: pointer;
 		font-family: var(--font-sans);
 		margin-top: 8px;
+	}
+	.btn-primary:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+</style>
+ry {
+		padding: 14px 28px;
+		border-radius: var(--radius-md);
+		font-size: 1.0625rem;
+		font-weight: 700;
+		background: var(--accent);
+		color: #000;
+		border: none;
+		cursor: pointer;
+		font-family: var(--font-sans);
+		transition: transform 0.1s, opacity 0.2s, background-color 0.2s;
+		width: auto; /* Evita que se estire */
+		min-width: 160px;
+	}
+	.btn-primary:active {
+		transform: scale(0.97);
+	}
+	.btn-primary:hover {
+		background: #b4c0ff;
 	}
 	.btn-primary:disabled {
 		opacity: 0.5;

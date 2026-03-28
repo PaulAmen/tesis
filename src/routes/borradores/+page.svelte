@@ -295,45 +295,44 @@
 
 <style>
 	h1 {
-		font-size: 1.5rem;
-		margin-bottom: 16px;
+		font-size: 2.25rem;
+		font-weight: 700;
+		letter-spacing: -0.03em;
+		margin-bottom: 24px;
 	}
 	.seccion-selector {
-		margin-bottom: 16px;
+		margin-bottom: 32px;
+		background: var(--bg-surface);
+		padding: 20px;
+		border-radius: var(--radius-md);
+		border: 1px solid var(--border);
 	}
 	.seccion-selector label {
 		font-family: var(--font-mono);
-		font-size: 0.75rem;
+		font-size: 0.8125rem;
 		color: var(--text-muted);
 		text-transform: uppercase;
 		display: block;
-		margin-bottom: 4px;
+		margin-bottom: 8px;
+		font-weight: 600;
 	}
 	.section-header {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		margin-bottom: 12px;
+		margin-bottom: 20px;
+		padding-bottom: 12px;
+		border-bottom: 2px solid var(--border);
 	}
 	h2 {
-		font-size: 1.125rem;
-		color: var(--text-secondary);
+		font-size: 1.5rem;
+		color: var(--text-primary);
+		font-weight: 700;
 	}
 	.borrador-list {
 		display: grid;
 		grid-template-columns: 1fr;
-		gap: 8px;
-	}
-	@media (min-width: 768px) {
-		.borrador-list {
-			grid-template-columns: repeat(2, 1fr);
-			gap: 12px;
-		}
-	}
-	@media (min-width: 1280px) {
-		.borrador-list {
-			grid-template-columns: repeat(3, 1fr);
-		}
+		gap: 16px;
 	}
 	.borrador-card {
 		display: block;
@@ -341,91 +340,115 @@
 		text-align: left;
 		background: var(--bg-surface);
 		border: 1px solid var(--border);
-		border-radius: 10px;
-		padding: 12px 14px;
+		border-radius: var(--radius-md);
+		padding: 20px;
 		cursor: pointer;
-		transition: border-color 0.2s;
+		transition: all 0.2s;
 		color: inherit;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 	}
 	.borrador-card:hover {
-		border-color: var(--accent-dim);
+		border-color: var(--accent);
+		background: var(--bg-elevated);
+		transform: translateY(-2px);
 	}
 	.borrador-title {
-		font-weight: 500;
-		margin-bottom: 4px;
+		font-weight: 700;
+		font-size: 1.125rem;
+		margin-bottom: 8px;
+		color: var(--accent);
 	}
 	.borrador-preview {
-		font-size: 0.8125rem;
-		color: var(--text-muted);
-		line-height: 1.4;
+		font-size: 0.9375rem;
+		color: var(--text-secondary);
+		line-height: 1.5;
 	}
 
 	/* Editor */
 	.editor {
-		margin-top: 8px;
+		margin-top: 16px;
+		background: var(--bg-surface);
+		padding: 24px;
+		border-radius: var(--radius-lg);
+		border: 1px solid var(--border);
+		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 	}
 	.editor-header {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		margin-bottom: 12px;
+		margin-bottom: 24px;
 	}
 	.field {
-		margin-bottom: 12px;
+		margin-bottom: 20px;
 	}
 	.field label {
 		font-family: var(--font-mono);
-		font-size: 0.75rem;
+		font-size: 0.8125rem;
 		color: var(--text-muted);
 		text-transform: uppercase;
 		display: block;
-		margin-bottom: 4px;
+		margin-bottom: 8px;
+		font-weight: 600;
 	}
 	.editor-textarea {
-		min-height: 250px;
-		padding: 16px;
-		font-size: 1rem;
+		min-height: 400px;
+		padding: 20px;
+		font-size: 1.125rem;
 		line-height: 1.7;
+		background: var(--bg-base);
+		border: 2px solid var(--border);
 	}
 	.editor-actions {
 		display: flex;
-		gap: 8px;
+		gap: 12px;
 		flex-wrap: wrap;
-		margin-bottom: 12px;
+		margin-bottom: 24px;
+		justify-content: flex-end;
 	}
 	.btn {
-		padding: 8px 16px;
-		border-radius: 8px;
-		font-size: 0.875rem;
-		font-weight: 500;
+		padding: 12px 24px;
+		border-radius: var(--radius-md);
+		font-size: 1rem;
+		font-weight: 600;
 		background: var(--accent);
-		color: var(--bg-base);
+		color: #000;
 		border: none;
 		cursor: pointer;
 		font-family: var(--font-sans);
+		transition: all 0.2s;
+		width: auto;
 	}
+	.btn:active { transform: scale(0.97); }
 	.btn:disabled { opacity: 0.5; cursor: not-allowed; }
-	.btn-sm { padding: 4px 10px; font-size: 0.75rem; }
+	.btn-sm { padding: 8px 16px; font-size: 0.875rem; }
 	.btn-outline {
 		background: transparent;
 		color: var(--accent);
-		border: 1px solid var(--accent-dim);
+		border: 2px solid var(--accent-dim);
+	}
+	.btn-outline:hover {
+		background: rgba(165, 180, 252, 0.1);
 	}
 	.btn-link {
 		font-family: var(--font-mono);
-		font-size: 0.875rem;
+		font-size: 1rem;
 		color: var(--accent);
 		background: none;
 		border: none;
 		cursor: pointer;
+		font-weight: 600;
+		text-decoration: underline;
+		text-underline-offset: 4px;
 	}
 	.btn-delete {
 		font-family: var(--font-mono);
-		font-size: 0.75rem;
+		font-size: 0.875rem;
 		color: var(--error);
-		padding: 4px 10px;
+		padding: 8px 16px;
 		border: 1px solid var(--error);
-		border-radius: 6px;
+		border-radius: var(--radius-sm);
+		background: rgba(252, 165, 165, 0.05);
 	}
 
 	/* Cita selector */

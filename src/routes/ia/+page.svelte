@@ -79,20 +79,23 @@
 
 <style>
 	h1 {
-		font-size: 1.5rem;
-		margin-bottom: 4px;
+		font-size: 2.5rem;
+		font-weight: 700;
+		margin-bottom: 8px;
+		letter-spacing: -0.04em;
 	}
 	.subtitle {
 		font-family: var(--font-mono);
-		font-size: 0.8125rem;
-		color: var(--text-muted);
-		margin-bottom: 20px;
+		font-size: 1rem;
+		color: var(--text-secondary);
+		margin-bottom: 40px;
+		font-weight: 500;
 	}
 	.consultas {
 		display: grid;
 		grid-template-columns: 1fr;
-		gap: 10px;
-		margin-bottom: 20px;
+		gap: 16px;
+		margin-bottom: 32px;
 	}
 	@media (min-width: 768px) {
 		.consultas {
@@ -101,57 +104,76 @@
 	}
 	.consulta-card {
 		display: flex;
-		align-items: center;
-		gap: 14px;
-		padding: 14px 16px;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 16px;
+		padding: 24px;
 		background: var(--bg-surface);
-		border: 1px solid var(--border);
-		border-radius: 10px;
+		border: 2px solid var(--border);
+		border-radius: var(--radius-md);
 		cursor: pointer;
 		color: inherit;
 		text-align: left;
-		transition: border-color 0.2s;
+		transition: all 0.2s;
 		width: 100%;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 	}
 	.consulta-card:hover {
-		border-color: var(--accent-dim);
+		border-color: var(--accent);
+		background: var(--bg-elevated);
+		transform: translateY(-4px);
 	}
 	.consulta-card.active {
 		border-color: var(--accent);
+		background: rgba(165, 180, 252, 0.05);
+		box-shadow: 0 0 0 4px rgba(165, 180, 252, 0.1);
 	}
 	.consulta-icon {
-		font-size: 1.5rem;
-		width: 36px;
-		text-align: center;
-		flex-shrink: 0;
+		font-size: 2rem;
+		background: var(--bg-elevated);
+		width: 56px;
+		height: 56px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: var(--radius-sm);
+		border: 1px solid var(--border);
 	}
 	.consulta-info {
 		flex: 1;
 	}
 	.consulta-title {
-		font-weight: 500;
-		margin-bottom: 2px;
+		font-weight: 700;
+		font-size: 1.25rem;
+		margin-bottom: 6px;
+		color: var(--text-primary);
 	}
 	.consulta-desc {
-		font-size: 0.8125rem;
-		color: var(--text-muted);
+		font-size: 0.9375rem;
+		color: var(--text-secondary);
+		line-height: 1.4;
 	}
 	.result-box {
 		background: var(--bg-surface);
-		border: 1px solid var(--border);
-		border-radius: 12px;
-		padding: 18px;
+		border: 2px solid var(--border);
+		border-radius: var(--radius-lg);
+		padding: 24px;
+		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 	}
 	.result-box pre {
 		white-space: pre-wrap;
 		word-wrap: break-word;
 		font-family: var(--font-serif);
-		font-size: 0.9375rem;
-		line-height: 1.7;
+		font-size: 1.125rem;
+		line-height: 1.8;
+		color: var(--text-primary);
 	}
 	.loading {
 		text-align: center;
-		color: var(--text-muted);
+		color: var(--accent);
 		font-style: italic;
+		font-size: 1.125rem;
+		padding: 20px 0;
+		font-weight: 600;
 	}
 </style>

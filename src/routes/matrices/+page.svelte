@@ -229,48 +229,52 @@
 
 <style>
 	h1 {
-		font-size: 1.5rem;
-		margin-bottom: 16px;
+		font-size: 2.25rem;
 		font-weight: 700;
+		letter-spacing: -0.03em;
+		margin-bottom: 24px;
 	}
 
 	.tipo-selector {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 6px;
-		margin-bottom: 20px;
+		gap: 10px;
+		margin-bottom: 32px;
+		background: var(--bg-surface);
+		padding: 12px;
+		border-radius: var(--radius-md);
+		border: 1px solid var(--border);
 	}
 	.tipo-btn {
-		padding: 8px 14px;
-		border-radius: var(--radius-md);
-		font-size: 0.8125rem;
+		padding: 10px 18px;
+		border-radius: var(--radius-sm);
+		font-size: 0.875rem;
 		font-family: var(--font-mono);
-		background: var(--bg-surface);
+		background: transparent;
 		color: var(--text-secondary);
-		border: 1px solid var(--border);
+		border: 1px solid transparent;
 		cursor: pointer;
 		transition: all 0.2s;
+		font-weight: 500;
+	}
+	.tipo-btn:hover {
+		color: var(--text-primary);
+		background: var(--bg-elevated);
 	}
 	.tipo-btn.active {
 		background: var(--accent);
 		color: #000;
-		border-color: var(--accent);
-		font-weight: 600;
+		font-weight: 700;
 	}
 
 	.campos-list {
 		display: grid;
 		grid-template-columns: 1fr;
-		gap: 16px;
+		gap: 20px;
 	}
-	@media (min-width: 768px) {
+	@media (min-width: 1024px) {
 		.campos-list {
 			grid-template-columns: repeat(2, 1fr);
-		}
-	}
-	@media (min-width: 1280px) {
-		.campos-list {
-			grid-template-columns: repeat(3, 1fr);
 		}
 	}
 
@@ -278,46 +282,61 @@
 		background: var(--bg-surface);
 		border: 1px solid var(--border);
 		border-radius: var(--radius-md);
-		padding: 16px;
+		padding: 24px;
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+		transition: transform 0.2s, border-color 0.2s;
+	}
+	.campo-card:hover {
+		border-color: var(--accent-dim);
 	}
 
 	.campo-label {
 		font-family: var(--font-mono);
-		font-size: 0.8125rem;
-		color: var(--text-muted);
+		font-size: 0.875rem;
+		color: var(--accent);
 		text-transform: uppercase;
 		display: block;
-		margin-bottom: 8px;
-		font-weight: 600;
-		letter-spacing: 0.05em;
+		font-weight: 700;
+		letter-spacing: 0.08em;
 	}
 
 	textarea {
-		min-height: 150px;
-		font-size: 1rem;
-		line-height: 1.7;
+		min-height: 180px;
+		font-size: 1.0625rem;
+		line-height: 1.65;
+		background: var(--bg-base);
+		padding: 16px;
+		border-radius: var(--radius-sm);
+		border: 2px solid var(--border);
+	}
+	textarea:focus {
+		border-color: var(--accent);
 	}
 
 	.campo-actions {
 		display: flex;
-		gap: 8px;
-		margin-top: 10px;
+		gap: 10px;
 		flex-wrap: wrap;
 	}
 
 	.btn-action {
-		padding: 6px 12px;
+		padding: 8px 16px;
 		border-radius: var(--radius-sm);
-		font-size: 0.75rem;
+		font-size: 0.8125rem;
 		font-family: var(--font-mono);
-		background: transparent;
-		color: var(--accent);
-		border: 1px solid var(--accent-dim);
+		background: var(--bg-elevated);
+		color: var(--text-primary);
+		border: 1px solid var(--border);
 		cursor: pointer;
 		transition: all 0.2s;
+		font-weight: 600;
 	}
 	.btn-action:hover {
-		background: rgba(165, 180, 252, 0.1);
+		border-color: var(--accent);
+		background: var(--bg-hover);
 	}
 	.btn-action:disabled {
 		opacity: 0.5;
@@ -326,104 +345,122 @@
 
 	/* Cita selector */
 	.cita-selector {
-		background: var(--bg-elevated);
-		border: 1px solid var(--border);
-		border-radius: var(--radius-sm);
-		padding: 10px;
-		margin-top: 10px;
+		background: var(--bg-surface);
+		border: 2px solid var(--accent-dim);
+		border-radius: var(--radius-md);
+		padding: 16px;
+		margin-top: 4px;
+		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+	}
+	.cita-selector input {
+		margin-bottom: 12px;
 	}
 	.cita-selector-list {
-		max-height: 180px;
+		max-height: 220px;
 		overflow-y: auto;
-		margin-top: 8px;
 	}
 	.cita-selector-item {
 		display: flex;
 		flex-direction: column;
 		width: 100%;
 		text-align: left;
-		padding: 8px;
+		padding: 12px;
 		border: none;
 		background: none;
 		color: inherit;
 		cursor: pointer;
 		border-radius: var(--radius-sm);
-		transition: background 0.15s;
+		transition: background 0.2s;
+		border-bottom: 1px solid var(--border);
+	}
+	.cita-selector-item:last-child {
+		border-bottom: none;
 	}
 	.cita-selector-item:hover {
 		background: var(--bg-hover);
 	}
 	.cita-sel-autor {
 		font-family: var(--font-mono);
-		font-size: 0.8125rem;
+		font-size: 0.875rem;
 		color: var(--accent);
+		font-weight: 600;
 	}
 	.cita-sel-titulo {
-		font-size: 0.8125rem;
+		font-size: 0.875rem;
 		color: var(--text-secondary);
+		margin-top: 2px;
 	}
 
 	/* Chips */
 	.chips {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 6px;
-		margin-top: 10px;
+		gap: 8px;
 	}
 	.chip {
 		display: inline-flex;
 		align-items: center;
-		gap: 4px;
+		gap: 6px;
 		font-family: var(--font-mono);
-		font-size: 0.75rem;
-		padding: 3px 8px;
+		font-size: 0.8125rem;
+		padding: 4px 12px;
 		border-radius: var(--radius-sm);
 		background: var(--bg-elevated);
 		color: var(--text-secondary);
 		border: 1px solid var(--border);
+		font-weight: 500;
 	}
 	.chip-remove {
 		background: none;
 		border: none;
-		color: var(--text-muted);
+		color: var(--error);
 		cursor: pointer;
-		font-size: 0.875rem;
+		font-size: 1.125rem;
 		padding: 0;
 		line-height: 1;
+		margin-left: 4px;
 	}
 
 	/* IA result */
 	.ia-result {
-		background: var(--bg-elevated);
-		border: 1px solid var(--accent-dim);
-		border-radius: var(--radius-sm);
-		padding: 14px;
-		margin-top: 10px;
+		background: var(--bg-base);
+		border: 2px solid var(--accent);
+		border-radius: var(--radius-md);
+		padding: 20px;
+		margin-top: 4px;
+		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 	}
 	.ia-result pre {
 		white-space: pre-wrap;
 		word-wrap: break-word;
 		font-family: var(--font-serif);
-		font-size: 0.9375rem;
-		line-height: 1.6;
-		margin-bottom: 10px;
+		font-size: 1.0625rem;
+		line-height: 1.7;
+		margin-bottom: 16px;
+		color: var(--text-primary);
 	}
 	.btn-insert {
-		padding: 6px 14px;
+		padding: 10px 20px;
 		border-radius: var(--radius-sm);
-		font-size: 0.8125rem;
-		font-weight: 600;
+		font-size: 0.9375rem;
+		font-weight: 700;
 		background: var(--accent);
 		color: #000;
 		border: none;
 		cursor: pointer;
 		font-family: var(--font-sans);
+		transition: transform 0.1s;
+	}
+	.btn-insert:active {
+		transform: scale(0.96);
 	}
 
 	.loading {
 		text-align: center;
-		color: var(--text-muted);
-		padding: 24px 0;
+		color: var(--accent);
+		padding: 40px 0;
 		font-style: italic;
+		font-size: 1.125rem;
+		font-weight: 600;
 	}
 </style>
