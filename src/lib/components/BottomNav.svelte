@@ -4,18 +4,18 @@
 
 	const items = [
 		{ href: `${base}/`, label: 'Citas', icon: 'book' },
-		{ href: `${base}/borradores`, label: 'Borradores', icon: 'edit' },
-		{ href: `${base}/conexiones`, label: 'Conexiones', icon: 'link' },
-		{ href: `${base}/ia`, label: 'IA', icon: 'brain' },
-		{ href: `${base}/nueva`, label: 'Nueva', icon: 'plus' }
+		{ href: `${base}/borradores`, label: 'Borrador', icon: 'edit' },
+		{ href: `${base}/matrices`, label: 'Matrices', icon: 'grid' },
+		{ href: `${base}/conexiones`, label: 'Nexos', icon: 'link' },
+		{ href: `${base}/ia`, label: 'IA', icon: 'brain' }
 	];
 
 	const icons: Record<string, string> = {
 		book: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253',
 		edit: 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z',
+		grid: 'M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm10 0a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zm10 0a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z',
 		link: 'M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1',
-		brain: 'M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z',
-		plus: 'M12 4v16m8-8H4'
+		brain: 'M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z'
 	};
 
 	function isActive(href: string): boolean {
@@ -46,29 +46,37 @@
 		right: 0;
 		display: flex;
 		justify-content: space-around;
-		background: var(--bg-surface);
+		background: rgba(18, 18, 18, 0.85);
+		backdrop-filter: blur(12px);
+		-webkit-backdrop-filter: blur(12px);
 		border-top: 1px solid var(--border);
-		padding: 6px 0 env(safe-area-inset-bottom, 8px);
+		padding: 8px 0 env(safe-area-inset-bottom, 12px);
 		z-index: 100;
 	}
 	.nav-item {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: 2px;
-		padding: 4px 12px;
+		gap: 4px;
+		padding: 8px 16px;
 		color: var(--text-muted);
 		text-decoration: none;
-		font-size: 0.625rem;
+		font-size: 0.75rem;
 		font-family: var(--font-mono);
 		text-transform: uppercase;
-		letter-spacing: 0.05em;
-		transition: color 0.2s;
+		letter-spacing: 0.08em;
+		transition: color 0.2s, transform 0.1s;
 	}
 	.nav-item.active {
 		color: var(--accent);
 	}
 	.nav-item:hover {
 		color: var(--text-primary);
+	}
+	.nav-item:active {
+		transform: scale(0.92);
+	}
+	svg {
+		stroke-width: 2;
 	}
 </style>

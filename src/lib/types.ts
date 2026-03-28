@@ -111,3 +111,66 @@ export interface Borrador {
 	creado_en: Date;
 	actualizado_en: Date;
 }
+
+export type TipoMatriz = 'congruencia' | 'enfoque' | 'tipo_investigacion' | 'tecnicas' | 'unidades';
+
+export interface CampoMatriz {
+	id: string;
+	tipo: TipoMatriz;
+	campo: string;
+	contenido: string;
+	citas_usadas: string[];
+	actualizado_en: Date;
+}
+
+export const MATRICES: Record<TipoMatriz, { nombre: string; campos: { key: string; label: string }[] }> = {
+	congruencia: {
+		nombre: 'Matriz de Congruencia',
+		campos: [
+			{ key: 'tema', label: 'Tema' },
+			{ key: 'pregunta_investigacion', label: 'Pregunta de investigación' },
+			{ key: 'objetivo_general', label: 'Objetivo general' },
+			{ key: 'objetivos_especificos', label: 'Objetivos específicos' },
+			{ key: 'hipotesis', label: 'Hipótesis' },
+			{ key: 'variable_independiente', label: 'Variable independiente' },
+			{ key: 'variable_dependiente', label: 'Variable dependiente' },
+			{ key: 'conceptualizacion_vi', label: 'Conceptualización V.I.' },
+			{ key: 'conceptualizacion_vd', label: 'Conceptualización V.D.' },
+			{ key: 'dimensiones_vi', label: 'Dimensiones V.I.' },
+			{ key: 'dimensiones_vd', label: 'Dimensiones V.D.' },
+			{ key: 'indicadores_vi', label: 'Indicadores V.I.' },
+			{ key: 'indicadores_vd', label: 'Indicadores V.D.' },
+			{ key: 'temas_marco_teorico', label: 'Temas del marco teórico' },
+			{ key: 'marco_metodologico', label: 'Marco metodológico' }
+		]
+	},
+	enfoque: {
+		nombre: 'Enfoque',
+		campos: [
+			{ key: 'enfoque_investigacion', label: 'Enfoque de investigación' },
+			{ key: 'paradigma_investigacion', label: 'Paradigma de investigación' }
+		]
+	},
+	tipo_investigacion: {
+		nombre: 'Tipo de Investigación',
+		campos: [
+			{ key: 'tipo', label: 'Tipo' },
+			{ key: 'argumentacion', label: 'Argumentación' }
+		]
+	},
+	tecnicas: {
+		nombre: 'Técnicas',
+		campos: [
+			{ key: 'tecnicas_investigacion', label: 'Técnicas de investigación' },
+			{ key: 'instrumentos_investigacion', label: 'Instrumentos de investigación' }
+		]
+	},
+	unidades: {
+		nombre: 'Unidades',
+		campos: [
+			{ key: 'universo', label: 'Universo' },
+			{ key: 'poblacion', label: 'Población' },
+			{ key: 'muestra', label: 'Muestra' }
+		]
+	}
+};

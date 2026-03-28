@@ -89,10 +89,15 @@
 		margin-bottom: 20px;
 	}
 	.consultas {
-		display: flex;
-		flex-direction: column;
+		display: grid;
+		grid-template-columns: 1fr;
 		gap: 10px;
 		margin-bottom: 20px;
+	}
+	@media (min-width: 768px) {
+		.consultas {
+			grid-template-columns: repeat(3, 1fr);
+		}
 	}
 	.consulta-card {
 		display: flex;

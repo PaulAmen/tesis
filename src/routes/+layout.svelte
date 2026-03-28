@@ -61,37 +61,41 @@
 	}
 
 	:global(:root) {
-		--bg-base: #0f0f0f;
-		--bg-surface: #1a1a1a;
-		--bg-elevated: #252525;
+		--bg-base: #050505;
+		--bg-surface: #121212;
+		--bg-elevated: #1e1e1e;
 		--bg-hover: #2a2a2a;
-		--border: #333;
-		--text-primary: #e8e8e8;
-		--text-secondary: #a0a0a0;
-		--text-muted: #666;
-		--accent: #8b9cf7;
-		--accent-dim: #5a6abf;
-		--success: #6ee7a0;
-		--error: #e76e6e;
-		--warning: #e7c46e;
+		--border: #333333;
+		--text-primary: #ffffff;
+		--text-secondary: #b3b3b3;
+		--text-muted: #757575;
+		--accent: #a5b4fc;
+		--accent-dim: #6366f1;
+		--success: #86efac;
+		--error: #fca5a5;
+		--warning: #fde047;
 
 		--font-serif: 'Georgia', 'Times New Roman', serif;
 		--font-mono: 'SF Mono', 'Fira Code', 'Consolas', monospace;
-		--font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+		--font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 
-		--badge-libro: #6e9be7;
-		--badge-articulo: #e7a06e;
-		--badge-reporte: #a06ee7;
-		--badge-tesis: #6ee7c4;
-		--badge-web: #e76ea0;
+		--badge-libro: #93c5fd;
+		--badge-articulo: #fdba74;
+		--badge-reporte: #c084fc;
+		--badge-tesis: #5eead4;
+		--badge-web: #f472b6;
+
+		--radius-sm: 6px;
+		--radius-md: 12px;
+		--radius-lg: 20px;
 	}
 
 	:global(html, body) {
 		background: var(--bg-base);
 		color: var(--text-primary);
 		font-family: var(--font-serif);
-		font-size: 16px;
-		line-height: 1.6;
+		font-size: 18px;
+		line-height: 1.65;
 		-webkit-font-smoothing: antialiased;
 		min-height: 100vh;
 	}
@@ -99,6 +103,11 @@
 	:global(a) {
 		color: var(--accent);
 		text-decoration: none;
+		transition: color 0.2s;
+	}
+
+	:global(a:hover) {
+		color: var(--text-primary);
 	}
 
 	:global(button) {
@@ -107,28 +116,34 @@
 		border: none;
 		background: none;
 		color: inherit;
+		transition: transform 0.1s, opacity 0.2s;
+	}
+
+	:global(button:active) {
+		transform: scale(0.98);
 	}
 
 	:global(input, textarea, select) {
 		font-family: var(--font-serif);
 		background: var(--bg-elevated);
 		color: var(--text-primary);
-		border: 1px solid var(--border);
-		border-radius: 8px;
-		padding: 10px 12px;
-		font-size: 0.9375rem;
+		border: 2px solid var(--border);
+		border-radius: var(--radius-md);
+		padding: 12px 16px;
+		font-size: 1rem;
 		width: 100%;
 		outline: none;
-		transition: border-color 0.2s;
+		transition: border-color 0.2s, box-shadow 0.2s;
 	}
 
 	:global(input:focus, textarea:focus, select:focus) {
 		border-color: var(--accent);
+		box-shadow: 0 0 0 4px rgba(165, 180, 252, 0.1);
 	}
 
 	:global(textarea) {
 		resize: vertical;
-		min-height: 120px;
+		min-height: 140px;
 	}
 
 	:global(select) {
@@ -140,7 +155,7 @@
 	}
 
 	.app-shell {
-		max-width: 480px;
+		max-width: 100%;
 		margin: 0 auto;
 		min-height: 100vh;
 	}
@@ -148,6 +163,17 @@
 	.content {
 		padding: 16px;
 		padding-bottom: 80px;
+	}
+
+	@media (min-width: 768px) {
+		.content {
+			padding: 32px 48px 80px;
+		}
+	}
+	@media (min-width: 1280px) {
+		.content {
+			padding: 40px 80px 80px;
+		}
 	}
 
 	.loading {

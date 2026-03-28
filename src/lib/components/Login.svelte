@@ -60,43 +60,56 @@
 	}
 	.login-card {
 		width: 100%;
-		max-width: 360px;
+		max-width: 400px;
 		text-align: center;
+		padding: 32px;
+		background: var(--bg-surface);
+		border: 1px solid var(--border);
+		border-radius: var(--radius-lg);
+		box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
 	}
 	h1 {
-		font-size: 1.75rem;
-		font-weight: 600;
-		margin-bottom: 4px;
+		font-size: 2.25rem;
+		font-weight: 700;
+		margin-bottom: 8px;
+		letter-spacing: -0.02em;
 	}
 	.subtitle {
-		color: var(--text-muted);
-		font-size: 0.875rem;
-		margin-bottom: 32px;
+		color: var(--text-secondary);
+		font-size: 1.125rem;
+		margin-bottom: 40px;
 	}
 	.btn-google {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		gap: 10px;
+		gap: 12px;
 		width: 100%;
-		background: var(--bg-elevated);
-		border: 1px solid var(--border);
-		color: var(--text-primary);
-		font-weight: 500;
-		padding: 12px;
-		border-radius: 8px;
-		font-size: 0.9375rem;
-		transition: border-color 0.2s;
+		background: #ffffff;
+		color: #000000;
+		font-weight: 600;
+		padding: 16px;
+		border-radius: var(--radius-md);
+		font-size: 1.125rem;
+		transition: transform 0.1s, opacity 0.2s, background-color 0.2s;
 	}
 	.btn-google:hover {
-		border-color: var(--accent);
+		background: #f0f0f0;
+	}
+	.btn-google:active {
+		transform: scale(0.97);
 	}
 	.btn-google:disabled {
-		opacity: 0.5;
+		opacity: 0.7;
+		cursor: not-allowed;
 	}
 	.error {
 		color: var(--error);
-		font-size: 0.8125rem;
-		margin-bottom: 16px;
+		font-size: 1rem;
+		margin-bottom: 24px;
+		background: rgba(252, 165, 165, 0.1);
+		padding: 12px;
+		border-radius: var(--radius-sm);
+		border: 1px solid rgba(252, 165, 165, 0.2);
 	}
 </style>

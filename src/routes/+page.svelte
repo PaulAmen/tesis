@@ -69,79 +69,109 @@
 		margin-bottom: 16px;
 	}
 	h1 {
-		font-size: 1.5rem;
-		font-weight: 600;
+		font-size: 2rem;
+		font-weight: 700;
+		letter-spacing: -0.02em;
 	}
 	.fab {
-		width: 40px;
-		height: 40px;
-		border-radius: 50%;
+		width: 48px;
+		height: 48px;
+		border-radius: var(--radius-lg);
 		background: var(--accent);
-		color: var(--bg-base);
+		color: #000;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		font-size: 1.5rem;
-		font-weight: 300;
+		font-size: 1.75rem;
+		font-weight: 400;
 		text-decoration: none;
 		line-height: 1;
+		box-shadow: 0 4px 12px rgba(165, 180, 252, 0.3);
+		transition: transform 0.1s, background-color 0.2s;
+	}
+	.fab:active {
+		transform: scale(0.92);
 	}
 	.search-box {
-		margin-bottom: 16px;
+		margin-bottom: 24px;
 	}
 	.citas-list {
-		display: flex;
-		flex-direction: column;
-		gap: 10px;
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 16px;
+	}
+	@media (min-width: 768px) {
+		.citas-list {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+	@media (min-width: 1024px) {
+		.citas-list {
+			grid-template-columns: repeat(3, 1fr);
+		}
+	}
+	@media (min-width: 1440px) {
+		.citas-list {
+			grid-template-columns: repeat(4, 1fr);
+		}
 	}
 	.cita-card {
 		display: block;
 		background: var(--bg-surface);
 		border: 1px solid var(--border);
-		border-radius: 10px;
-		padding: 14px;
+		border-radius: var(--radius-md);
+		padding: 18px;
 		text-decoration: none;
 		color: inherit;
-		transition: border-color 0.2s;
+		transition: border-color 0.2s, background-color 0.2s, transform 0.1s;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 	}
 	.cita-card:hover {
-		border-color: var(--accent-dim);
+		border-color: var(--accent);
+		background: var(--bg-elevated);
+	}
+	.cita-card:active {
+		transform: scale(0.99);
 	}
 	.cita-header {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		margin-bottom: 4px;
+		margin-bottom: 8px;
 	}
 	.cita-autor {
 		font-family: var(--font-mono);
-		font-size: 0.8125rem;
-		color: var(--text-secondary);
+		font-size: 0.875rem;
+		font-weight: 500;
+		color: var(--accent);
 	}
 	.badge {
 		font-family: var(--font-mono);
-		font-size: 0.6875rem;
-		padding: 2px 8px;
-		border-radius: 4px;
-		color: var(--bg-base);
+		font-size: 0.75rem;
+		padding: 4px 10px;
+		border-radius: var(--radius-sm);
+		color: #000;
 		text-transform: uppercase;
-		font-weight: 600;
+		font-weight: 700;
+		letter-spacing: 0.02em;
 	}
 	.cita-titulo {
-		font-size: 0.9375rem;
-		line-height: 1.4;
-		margin-bottom: 8px;
+		font-size: 1.125rem;
+		line-height: 1.45;
+		margin-bottom: 12px;
+		font-weight: 500;
+		color: var(--text-primary);
 	}
 	.tags {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 6px;
+		gap: 8px;
 	}
 	.tag {
 		font-family: var(--font-mono);
-		font-size: 0.6875rem;
-		padding: 2px 8px;
-		border-radius: 4px;
+		font-size: 0.75rem;
+		padding: 3px 10px;
+		border-radius: var(--radius-sm);
 		background: var(--bg-elevated);
 		color: var(--text-secondary);
 		border: 1px solid var(--border);

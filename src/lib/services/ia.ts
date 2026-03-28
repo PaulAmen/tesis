@@ -110,6 +110,28 @@ ${lista}`
 	);
 }
 
+export async function completarCampoMatriz(
+	nombreMatriz: string,
+	nombreCampo: string,
+	contenidoActual: string,
+	citas: { autor: string; año: number; cita_textual: string }[]
+): Promise<string> {
+	const citasTexto = citas.length > 0
+		? citas.map(c => `- ${c.autor} (${c.año}): "${c.cita_textual}"`).join('\n')
+		: '(sin citas vinculadas)';
+	return llamarClaude(
+		`Completa o mejora el siguiente campo de la "${nombreMatriz}" para una tesis doctoral UIIX.
+
+Campo: ${nombreCampo}
+Contenido actual: ${contenidoActual || '(vacío)'}
+
+Citas vinculadas:
+${citasTexto}
+
+Redacta contenido académico apropiado para este campo. Si hay contenido actual, mejóralo o amplíalo. Sé conciso y directo.`
+	);
+}
+
 export async function estructuraCap2(
 	citas: { autor: string; año: number; titulo: string; temas: string[] }[]
 ): Promise<string> {
