@@ -126,23 +126,7 @@ export interface CampoMatriz {
 export const MATRICES: Record<TipoMatriz, { nombre: string; campos: { key: string; label: string }[] }> = {
 	congruencia: {
 		nombre: 'Matriz de Congruencia',
-		campos: [
-			{ key: 'tema', label: 'Tema' },
-			{ key: 'pregunta_investigacion', label: 'Pregunta de investigación' },
-			{ key: 'objetivo_general', label: 'Objetivo general' },
-			{ key: 'objetivos_especificos', label: 'Objetivos específicos' },
-			{ key: 'hipotesis', label: 'Hipótesis' },
-			{ key: 'variable_independiente', label: 'Variable independiente' },
-			{ key: 'variable_dependiente', label: 'Variable dependiente' },
-			{ key: 'conceptualizacion_vi', label: 'Conceptualización V.I.' },
-			{ key: 'conceptualizacion_vd', label: 'Conceptualización V.D.' },
-			{ key: 'dimensiones_vi', label: 'Dimensiones V.I.' },
-			{ key: 'dimensiones_vd', label: 'Dimensiones V.D.' },
-			{ key: 'indicadores_vi', label: 'Indicadores V.I.' },
-			{ key: 'indicadores_vd', label: 'Indicadores V.D.' },
-			{ key: 'temas_marco_teorico', label: 'Temas del marco teórico' },
-			{ key: 'marco_metodologico', label: 'Marco metodológico' }
-		]
+		campos: []
 	},
 	enfoque: {
 		nombre: 'Enfoque',

@@ -1,5 +1,5 @@
 import {
-	collection, getDocs, setDoc, doc,
+	collection, getDocs, setDoc, doc, getDoc, deleteDoc,
 	serverTimestamp
 } from 'firebase/firestore';
 import { db } from '$lib/firebase/config';
@@ -34,4 +34,33 @@ export async function guardarCampo(tipo: TipoMatriz, campo: string, contenido: s
 		citas_usadas,
 		actualizado_en: serverTimestamp()
 	});
+}
+
+export async function eliminarCampo(tipo: TipoMatriz, campo: string): Promise<void> {
+	await deleteDoc(doc(db, COL, `${tipo}_${campo}`));
+}
+
+export async function obtenerMetaCongruencia(): Promise<{
+	counts: Record<string, number>;
+	conexiones: Record<string, string>;
+}> {
+	const snap = await getDoc(doc(db, COL, 'congruencia_meta'));
+	if (snap.exists()) {
+		const data = snap.data();
+		return {
+			counts: data.counts ?? { oe: 4, hipotesis: 3, dimension_vi: 3, dimension_vd: 3, indicador_vi: 3, indicador_vd: 3 },
+			conexiones: data.conexiones ?? {}
+		};
+	}
+	return {
+		counts: { oe: 4, hipotesis: 3, dimension_vi: 3, dimension_vd: 3, indicador_vi: 3, indicador_vd: 3 },
+		conexiones: {}
+	};
+}
+
+export async function guardarMetaCongruencia(
+	counts: Record<string, number>,
+	conexiones: Record<string, string>
+): Promise<void> {
+	await setDoc(doc(db, COL, 'congruencia_meta'), { counts, conexiones });
 }

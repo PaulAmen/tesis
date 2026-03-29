@@ -2,14 +2,133 @@
 	import { onMount } from 'svelte';
 	import { citasStore } from '$lib/stores/data';
 	import { showToast } from '$lib/stores/toast';
-	import { obtenerCamposPorTipo, guardarCampo } from '$lib/services/matrices';
+	import { obtenerCamposPorTipo, guardarCampo, eliminarCampo, obtenerMetaCongruencia, guardarMetaCongruencia } from '$lib/services/matrices';
 	import { completarCampoMatriz, verificarCongruencia } from '$lib/services/ia';
 	import { MATRICES } from '$lib/types';
-	import type { TipoMatriz, CampoMatriz, Cita } from '$lib/types';
+	import type { TipoMatriz, Cita } from '$lib/types';
 
 	let tipoActual = $state<TipoMatriz>('congruencia');
 	let cargando = $state(false);
 
+	let campos = $state<Record<string, { contenido: string; citas_usadas: string[] }>>({});
+
+	let selectorCampo = $state<string | null>(null);
+	let citaBusqueda = $state('');
+
+	let iaCampo = $state<string | null>(null);
+	let iaResult = $state('');
+	let iaLoading = $state(false);
+
+	let congruenciaLoading = $state(false);
+	let congruenciaResult = $state('');
+	let congruenciaWarnings = $state<string[]>([]);
+
+	let matrizInfo = $derived(MATRICES[tipoActual]);
+
+	// --- Congruencia dynamic state ---
+	let metaCounts = $state<Record<string, number>>({
+		oe: 4, hipotesis: 3,
+		dimension_vi: 3, dimension_vd: 3,
+		indicador_vi: 3, indicador_vd: 3
+	});
+	let conexiones = $state<Record<string, string>>({});
+
+	// --- Selection for copy ---
+	let selected = $state<Record<string, boolean>>({});
+	let selectedCount = $derived(Object.values(selected).filter(Boolean).length);
+
+	function toggleSelect(key: string) {
+		selected = { ...selected, [key]: !selected[key] };
+	}
+
+	function clearSelection() {
+		selected = {};
+	}
+
+	function getLabelForKey(key: string): string {
+		if (tipoActual === 'congruencia') {
+			const found = allCongruenciaKeys().find(c => c.key === key);
+			return found?.label ?? key;
+		}
+		const found = matrizInfo.campos.find((c: { key: string; label: string }) => c.key === key);
+		return found?.label ?? key;
+	}
+
+	function copiarTexto() {
+		const keys = Object.entries(selected).filter(([_, v]) => v).map(([k]) => k);
+		const lines = keys.map(key => {
+			const label = getLabelForKey(key);
+			const contenido = campos[key]?.contenido || '(vacío)';
+			const conn = conexiones[key] ? ` (-> ${getLabelForKey(conexiones[key])})` : '';
+			return `${label}${conn}:\n${contenido}`;
+		});
+		navigator.clipboard.writeText(lines.join('\n\n'));
+		showToast(`${keys.length} elementos copiados`);
+	}
+
+	function copiarCSV() {
+		const keys = Object.entries(selected).filter(([_, v]) => v).map(([k]) => k);
+		const header = 'Campo,Contenido,Conexión';
+		const rows = keys.map(key => {
+			const label = getLabelForKey(key);
+			const contenido = (campos[key]?.contenido || '').replace(/"/g, '""').replace(/\n/g, ' ');
+			const conn = conexiones[key] ? getLabelForKey(conexiones[key]) : '';
+			return `"${label}","${contenido}","${conn}"`;
+		});
+		navigator.clipboard.writeText([header, ...rows].join('\n'));
+		showToast(`${keys.length} elementos copiados como CSV`);
+	}
+
+	function hipotesisLabel(i: number): string {
+		if (i === 1) return 'Hipótesis principal';
+		if (i === 2) return 'Hipótesis nula';
+		if (i === 3) return 'Hipótesis alternativa';
+		return `Hipótesis ${i}`;
+	}
+
+	function allCongruenciaKeys(): { key: string; label: string }[] {
+		const r: { key: string; label: string }[] = [
+			{ key: 'tema', label: 'Tema' },
+			{ key: 'pregunta_investigacion', label: 'Pregunta de investigación' },
+			{ key: 'objetivo_general', label: 'Objetivo general' }
+		];
+		for (let i = 1; i <= metaCounts.oe; i++) r.push({ key: `oe_${i}`, label: `Objetivo específico ${i}` });
+		for (let i = 1; i <= metaCounts.hipotesis; i++) r.push({ key: `hipotesis_${i}`, label: hipotesisLabel(i) });
+		r.push({ key: 'variable_independiente', label: 'Variable independiente' });
+		r.push({ key: 'variable_dependiente', label: 'Variable dependiente' });
+		r.push({ key: 'conceptualizacion_vi', label: 'Conceptualización V.I.' });
+		r.push({ key: 'conceptualizacion_vd', label: 'Conceptualización V.D.' });
+		for (let i = 1; i <= metaCounts.dimension_vi; i++) r.push({ key: `dimension_vi_${i}`, label: `Dimensión V.I. ${i}` });
+		for (let i = 1; i <= metaCounts.dimension_vd; i++) r.push({ key: `dimension_vd_${i}`, label: `Dimensión V.D. ${i}` });
+		for (let i = 1; i <= metaCounts.indicador_vi; i++) r.push({ key: `indicador_vi_${i}`, label: `Indicador V.I. ${i}` });
+		for (let i = 1; i <= metaCounts.indicador_vd; i++) r.push({ key: `indicador_vd_${i}`, label: `Indicador V.D. ${i}` });
+		r.push({ key: 'temas_marco_teorico', label: 'Temas del marco teórico' });
+		r.push({ key: 'marco_metodologico', label: 'Marco metodológico' });
+		return r;
+	}
+
+	function oeOptions() {
+		const opts: { value: string; label: string }[] = [];
+		for (let i = 1; i <= metaCounts.oe; i++) {
+			const key = `oe_${i}`;
+			const preview = campos[key]?.contenido?.slice(0, 50) || `OE ${i}`;
+			opts.push({ value: key, label: `OE${i}: ${preview}` });
+		}
+		return opts;
+	}
+
+	function dimOptions(variable: 'vi' | 'vd') {
+		const opts: { value: string; label: string }[] = [];
+		const count = metaCounts[`dimension_${variable}`] ?? 0;
+		for (let i = 1; i <= count; i++) {
+			const key = `dimension_${variable}_${i}`;
+			const preview = campos[key]?.contenido?.slice(0, 50) || `Dim ${i}`;
+			opts.push({ value: key, label: `Dim ${i}: ${preview}` });
+		}
+		return opts;
+	}
+
+	// --- Generic helpers ---
 	function camposVacios(tipo: TipoMatriz): Record<string, { contenido: string; citas_usadas: string[] }> {
 		const obj: Record<string, { contenido: string; citas_usadas: string[] }> = {};
 		for (const c of MATRICES[tipo].campos) {
@@ -17,24 +136,6 @@
 		}
 		return obj;
 	}
-
-	let campos = $state(camposVacios('congruencia'));
-
-	// Cita selector
-	let selectorCampo = $state<string | null>(null);
-	let citaBusqueda = $state('');
-
-	// IA
-	let iaCampo = $state<string | null>(null);
-	let iaResult = $state('');
-	let iaLoading = $state(false);
-
-	// Congruencia
-	let congruenciaLoading = $state(false);
-	let congruenciaResult = $state('');
-	let congruenciaWarnings = $state<string[]>([]);
-
-	let matrizInfo = $derived(MATRICES[tipoActual]);
 
 	let citasFiltradas = $derived.by(() => {
 		const q = citaBusqueda.toLowerCase().trim();
@@ -44,6 +145,33 @@
 			c.titulo.toLowerCase().includes(q)
 		);
 	});
+
+	// --- Load ---
+	async function cargarCongruencia() {
+		cargando = true;
+		try {
+			const meta = await obtenerMetaCongruencia();
+			metaCounts = meta.counts;
+			conexiones = meta.conexiones;
+
+			const docs = await obtenerCamposPorTipo('congruencia');
+			const obj: Record<string, { contenido: string; citas_usadas: string[] }> = {};
+			for (const d of docs) {
+				obj[d.campo] = { contenido: d.contenido, citas_usadas: d.citas_usadas };
+			}
+			for (const { key } of allCongruenciaKeys()) {
+				if (!obj[key]) {
+					obj[key] = { contenido: '', citas_usadas: [] };
+				}
+			}
+			campos = obj;
+		} catch (e) {
+			console.error('Error cargando congruencia:', e);
+			showToast('Error al cargar', 'error');
+		} finally {
+			cargando = false;
+		}
+	}
 
 	async function cargarCampos() {
 		cargando = true;
@@ -71,25 +199,35 @@
 		selectorCampo = null;
 		iaCampo = null;
 		iaResult = '';
-		campos = camposVacios(tipoActual);
-		cargarCampos();
+		congruenciaResult = '';
+		congruenciaWarnings = [];
+		selected = {};
+		if (tipoActual === 'congruencia') {
+			cargarCongruencia();
+		} else {
+			campos = camposVacios(tipoActual);
+			cargarCampos();
+		}
 	}
 
 	onMount(() => {
-		cargarCampos();
+		cargarCongruencia();
 	});
 
+	// --- Save ---
 	async function handleBlur(key: string) {
 		const data = campos[key];
 		if (!data) return;
+		const tipo = tipoActual;
 		try {
-			await guardarCampo(tipoActual, key, data.contenido, data.citas_usadas);
+			await guardarCampo(tipo, key, data.contenido, data.citas_usadas);
 			showToast('Guardado');
 		} catch {
 			showToast('Error al guardar', 'error');
 		}
 	}
 
+	// --- Citas ---
 	function vincularCita(key: string, citaId: string) {
 		const current = campos[key];
 		if (!current || current.citas_usadas.includes(citaId)) return;
@@ -113,6 +251,7 @@
 		return $citasStore.find((c: Cita) => c.id === id);
 	}
 
+	// --- IA ---
 	async function handleIA(key: string, label: string) {
 		iaCampo = key;
 		iaLoading = true;
@@ -143,35 +282,71 @@
 			.catch(() => showToast('Error al guardar', 'error'));
 	}
 
-	const CAMPOS_CONGRUENCIA = [
-		'objetivo_general', 'objetivos_especificos', 'hipotesis',
-		'variable_independiente', 'variable_dependiente',
-		'dimensiones_vi', 'dimensiones_vd',
-		'indicadores_vi', 'indicadores_vd'
-	];
+	// --- Dynamic add/remove ---
+	function addField(group: string) {
+		const newCount = (metaCounts[group] ?? 0) + 1;
+		metaCounts = { ...metaCounts, [group]: newCount };
+		const newKey = `${group}_${newCount}`;
+		campos = { ...campos, [newKey]: { contenido: '', citas_usadas: [] } };
+		guardarMetaCongruencia(metaCounts, conexiones);
+	}
 
-	const LABELS_CONGRUENCIA: Record<string, string> = {
-		objetivo_general: 'Objetivo general',
-		objetivos_especificos: 'Objetivos específicos',
-		hipotesis: 'Hipótesis',
-		variable_independiente: 'Variable independiente',
-		variable_dependiente: 'Variable dependiente',
-		dimensiones_vi: 'Dimensiones V.I.',
-		dimensiones_vd: 'Dimensiones V.D.',
-		indicadores_vi: 'Indicadores V.I.',
-		indicadores_vd: 'Indicadores V.D.'
-	};
+	function removeField(group: string) {
+		const count = metaCounts[group] ?? 0;
+		if (count <= 1) return;
+		const oldKey = `${group}_${count}`;
+		const newCampos = { ...campos };
+		delete newCampos[oldKey];
+		campos = newCampos;
 
+		const newConexiones = { ...conexiones };
+		delete newConexiones[oldKey];
+		for (const [k, v] of Object.entries(newConexiones)) {
+			if (v === oldKey) delete newConexiones[k];
+		}
+		conexiones = newConexiones;
+		metaCounts = { ...metaCounts, [group]: count - 1 };
+
+		guardarMetaCongruencia(metaCounts, conexiones);
+		eliminarCampo('congruencia', oldKey).catch(() => {});
+	}
+
+	// --- Connections ---
+	function setConexion(from: string, to: string) {
+		if (to) {
+			conexiones = { ...conexiones, [from]: to };
+		} else {
+			const newConexiones = { ...conexiones };
+			delete newConexiones[from];
+			conexiones = newConexiones;
+		}
+		guardarMetaCongruencia(metaCounts, conexiones);
+	}
+
+	function getConexionLabel(key: string): string {
+		const target = conexiones[key];
+		if (!target) return '';
+		const preview = campos[target]?.contenido?.slice(0, 40);
+		if (preview) return preview + '...';
+		return target;
+	}
+
+	// --- Verificar congruencia ---
 	async function handleVerificarCongruencia() {
-		const vacios = CAMPOS_CONGRUENCIA.filter(k => !campos[k]?.contenido?.trim());
-		congruenciaWarnings = vacios.map(k => LABELS_CONGRUENCIA[k]);
+		const allKeys = allCongruenciaKeys();
+		const vacios = allKeys
+			.filter(({ key }) => !['tema', 'pregunta_investigacion', 'temas_marco_teorico', 'marco_metodologico'].includes(key))
+			.filter(({ key }) => !campos[key]?.contenido?.trim());
+		congruenciaWarnings = vacios.map(({ label }) => label);
 
 		congruenciaLoading = true;
 		congruenciaResult = '';
 		try {
 			const data: Record<string, string> = {};
-			for (const k of CAMPOS_CONGRUENCIA) {
-				data[k] = campos[k]?.contenido ?? '';
+			for (const { key, label } of allKeys) {
+				if (!['tema', 'pregunta_investigacion', 'temas_marco_teorico', 'marco_metodologico'].includes(key)) {
+					data[label] = campos[key]?.contenido ?? '';
+				}
 			}
 			congruenciaResult = await verificarCongruencia(data);
 		} catch (e: any) {
@@ -196,112 +371,287 @@
 	{/each}
 </div>
 
-{#if cargando}
-	<p class="loading">Cargando...</p>
-{:else}
-	<div class="campos-list">
-		{#each matrizInfo.campos as { key, label } (key)}
-			<div class="campo-card">
-				<label class="campo-label" for="campo-{key}">{label}</label>
-				<textarea
-					id="campo-{key}"
-					bind:value={campos[key].contenido}
-					onblur={() => handleBlur(key)}
-					rows="3"
-					placeholder="Escribe aquí..."
-				></textarea>
-
-				<div class="campo-actions">
-					<button
-						class="btn-action"
-						onclick={() => { selectorCampo = selectorCampo === key ? null : key; citaBusqueda = ''; }}
-					>
-						Vincular cita
-					</button>
-					<button
-						class="btn-action"
-						onclick={() => handleIA(key, label)}
-						disabled={iaLoading && iaCampo === key}
-					>
-						{iaLoading && iaCampo === key ? 'Generando...' : 'IA: completar'}
-					</button>
+<!-- Reusable campo card snippet -->
+{#snippet renderCampo(key: string, label: string, connOpts: {value: string, label: string}[] | null)}
+	{#if campos[key]}
+		<div class="campo-card">
+			<div class="campo-top">
+				<div class="campo-label-row">
+					<input
+						type="checkbox"
+						class="campo-check"
+						checked={!!selected[key]}
+						onchange={() => toggleSelect(key)}
+					/>
+					<label class="campo-label" for="campo-{key}">{label}</label>
 				</div>
-
-				{#if selectorCampo === key}
-					<div class="cita-selector">
-						<input type="text" placeholder="Buscar cita..." bind:value={citaBusqueda} />
-						<div class="cita-selector-list">
-							{#each citasFiltradas as c (c.id)}
-								<button class="cita-selector-item" onclick={() => vincularCita(key, c.id)}>
-									<span class="cita-sel-autor">{c.autor} ({c.año})</span>
-									<span class="cita-sel-titulo">{c.titulo}</span>
-								</button>
-							{/each}
-						</div>
-					</div>
-				{/if}
-
-				{#if campos[key].citas_usadas.length > 0}
-					<div class="chips">
-						{#each campos[key].citas_usadas as citaId}
-							{@const c = getCitaById(citaId)}
-							{#if c}
-								<span class="chip">
-									{c.autor} ({c.año})
-									<button class="chip-remove" onclick={() => desvincularCita(key, citaId)}>&times;</button>
-								</span>
-							{/if}
+				{#if connOpts}
+					<select
+						class="conn-select"
+						value={conexiones[key] || ''}
+						onchange={(e) => setConexion(key, (e.target as HTMLSelectElement).value)}
+					>
+						<option value="">Conectar a...</option>
+						{#each connOpts as opt}
+							<option value={opt.value}>{opt.label}</option>
 						{/each}
-					</div>
-				{/if}
-
-				{#if iaCampo === key && (iaLoading || iaResult)}
-					<div class="ia-result">
-						{#if iaLoading}
-							<p class="loading">Analizando con IA...</p>
-						{:else}
-							<pre>{iaResult}</pre>
-							<button class="btn-insert" onclick={() => insertarIA(key)}>Insertar texto</button>
-						{/if}
-					</div>
+					</select>
 				{/if}
 			</div>
-		{/each}
-	</div>
 
-	{#if tipoActual === 'congruencia'}
-		<div class="congruencia-section">
-			<button class="btn-congruencia" onclick={handleVerificarCongruencia} disabled={congruenciaLoading}>
-				{congruenciaLoading ? 'Verificando...' : 'IA: Verificar congruencia'}
-			</button>
+			{#if conexiones[key]}
+				<div class="conn-badge">{getConexionLabel(key)}</div>
+			{/if}
 
-			{#if congruenciaWarnings.length > 0}
-				<div class="congruencia-warning">
-					Campos vacíos: {congruenciaWarnings.join(', ')}
+			<textarea
+				id="campo-{key}"
+				bind:value={campos[key].contenido}
+				onblur={() => handleBlur(key)}
+				rows="3"
+				placeholder="Escribe aquí..."
+			></textarea>
+
+			<div class="campo-actions">
+				<button class="btn-action" onclick={() => { selectorCampo = selectorCampo === key ? null : key; citaBusqueda = ''; }}>
+					Vincular cita
+				</button>
+				<button class="btn-action" onclick={() => handleIA(key, label)} disabled={iaLoading && iaCampo === key}>
+					{iaLoading && iaCampo === key ? 'Generando...' : 'IA: completar'}
+				</button>
+			</div>
+
+			{#if selectorCampo === key}
+				<div class="cita-selector">
+					<input type="text" placeholder="Buscar cita..." bind:value={citaBusqueda} />
+					<div class="cita-selector-list">
+						{#each citasFiltradas as c (c.id)}
+							<button class="cita-selector-item" onclick={() => vincularCita(key, c.id)}>
+								<span class="cita-sel-autor">{c.autor} ({c.año})</span>
+								<span class="cita-sel-titulo">{c.titulo}</span>
+							</button>
+						{/each}
+					</div>
 				</div>
 			{/if}
 
-			{#if congruenciaLoading}
-				<div class="congruencia-result">
-					<p class="loading">Analizando congruencia...</p>
+			{#if campos[key].citas_usadas.length > 0}
+				<div class="chips">
+					{#each campos[key].citas_usadas as citaId}
+						{@const c = getCitaById(citaId)}
+						{#if c}
+							<span class="chip">
+								{c.autor} ({c.año})
+								<button class="chip-remove" onclick={() => desvincularCita(key, citaId)}>&times;</button>
+							</span>
+						{/if}
+					{/each}
 				</div>
-			{:else if congruenciaResult}
-				<div class="congruencia-result">
-					<div class="congruencia-header">
-						<span class="label">Verificación de Congruencia</span>
-						<button class="btn-close" onclick={() => { congruenciaResult = ''; congruenciaWarnings = []; }}>Cerrar</button>
-					</div>
-					<div class="congruencia-lines">
-						{#each congruenciaResult.split('\n') as linea}
-							{#if linea.trim()}
-								<p class="congruencia-line" class:ok={linea.includes('✓')} class:warn={linea.includes('~')} class:bad={linea.includes('✗')}>{linea}</p>
-							{/if}
-						{/each}
-					</div>
+			{/if}
+
+			{#if iaCampo === key && (iaLoading || iaResult)}
+				<div class="ia-result">
+					{#if iaLoading}
+						<p class="loading">Analizando con IA...</p>
+					{:else}
+						<pre>{iaResult}</pre>
+						<button class="btn-insert" onclick={() => insertarIA(key)}>Insertar texto</button>
+					{/if}
 				</div>
 			{/if}
 		</div>
 	{/if}
+{/snippet}
+
+{#if cargando}
+	<p class="loading">Cargando...</p>
+{:else if tipoActual === 'congruencia'}
+	<!-- Custom congruencia view -->
+
+	<div class="section-group">
+		<div class="group-title">Datos Generales</div>
+		<div class="campos-list">
+			{@render renderCampo('tema', 'Tema', null)}
+			{@render renderCampo('pregunta_investigacion', 'Pregunta de investigación', null)}
+		</div>
+	</div>
+
+	<div class="section-group">
+		<div class="campos-list single">
+			{@render renderCampo('objetivo_general', 'Objetivo general', null)}
+		</div>
+	</div>
+
+	<div class="section-group">
+		<div class="group-title">
+			Objetivos Específicos
+			<div class="group-controls">
+				<button class="btn-count" onclick={() => removeField('oe')} disabled={metaCounts.oe <= 1}>−</button>
+				<span class="count-badge">{metaCounts.oe}</span>
+				<button class="btn-count" onclick={() => addField('oe')}>+</button>
+			</div>
+		</div>
+		<div class="campos-list">
+			{#each Array.from({length: metaCounts.oe}, (_, i) => i + 1) as i (i)}
+				{@render renderCampo(`oe_${i}`, `Objetivo específico ${i}`, null)}
+			{/each}
+		</div>
+	</div>
+
+	<div class="section-group">
+		<div class="group-title">
+			Hipótesis
+			<div class="group-controls">
+				<button class="btn-count" onclick={() => removeField('hipotesis')} disabled={metaCounts.hipotesis <= 1}>−</button>
+				<span class="count-badge">{metaCounts.hipotesis}</span>
+				<button class="btn-count" onclick={() => addField('hipotesis')}>+</button>
+			</div>
+		</div>
+		<div class="campos-list">
+			{#each Array.from({length: metaCounts.hipotesis}, (_, i) => i + 1) as i (i)}
+				{@render renderCampo(`hipotesis_${i}`, hipotesisLabel(i), null)}
+			{/each}
+		</div>
+	</div>
+
+	<div class="section-group">
+		<div class="group-title">Variables</div>
+		<div class="campos-list">
+			{@render renderCampo('variable_independiente', 'Variable independiente', null)}
+			{@render renderCampo('variable_dependiente', 'Variable dependiente', null)}
+		</div>
+	</div>
+
+	<div class="section-group">
+		<div class="group-title">Conceptualización</div>
+		<div class="campos-list">
+			{@render renderCampo('conceptualizacion_vi', 'Conceptualización V.I.', null)}
+			{@render renderCampo('conceptualizacion_vd', 'Conceptualización V.D.', null)}
+		</div>
+	</div>
+
+	<div class="section-group">
+		<div class="group-title">
+			Dimensiones — Variable Independiente
+			<div class="group-controls">
+				<button class="btn-count" onclick={() => removeField('dimension_vi')} disabled={metaCounts.dimension_vi <= 1}>−</button>
+				<span class="count-badge">{metaCounts.dimension_vi}</span>
+				<button class="btn-count" onclick={() => addField('dimension_vi')}>+</button>
+			</div>
+		</div>
+		<div class="campos-list">
+			{#each Array.from({length: metaCounts.dimension_vi}, (_, i) => i + 1) as i (i)}
+				{@render renderCampo(`dimension_vi_${i}`, `Dimensión V.I. ${i}`, oeOptions())}
+			{/each}
+		</div>
+	</div>
+
+	<div class="section-group">
+		<div class="group-title">
+			Dimensiones — Variable Dependiente
+			<div class="group-controls">
+				<button class="btn-count" onclick={() => removeField('dimension_vd')} disabled={metaCounts.dimension_vd <= 1}>−</button>
+				<span class="count-badge">{metaCounts.dimension_vd}</span>
+				<button class="btn-count" onclick={() => addField('dimension_vd')}>+</button>
+			</div>
+		</div>
+		<div class="campos-list">
+			{#each Array.from({length: metaCounts.dimension_vd}, (_, i) => i + 1) as i (i)}
+				{@render renderCampo(`dimension_vd_${i}`, `Dimensión V.D. ${i}`, oeOptions())}
+			{/each}
+		</div>
+	</div>
+
+	<div class="section-group">
+		<div class="group-title">
+			Indicadores — Variable Independiente
+			<div class="group-controls">
+				<button class="btn-count" onclick={() => removeField('indicador_vi')} disabled={metaCounts.indicador_vi <= 1}>−</button>
+				<span class="count-badge">{metaCounts.indicador_vi}</span>
+				<button class="btn-count" onclick={() => addField('indicador_vi')}>+</button>
+			</div>
+		</div>
+		<div class="campos-list">
+			{#each Array.from({length: metaCounts.indicador_vi}, (_, i) => i + 1) as i (i)}
+				{@render renderCampo(`indicador_vi_${i}`, `Indicador V.I. ${i}`, dimOptions('vi'))}
+			{/each}
+		</div>
+	</div>
+
+	<div class="section-group">
+		<div class="group-title">
+			Indicadores — Variable Dependiente
+			<div class="group-controls">
+				<button class="btn-count" onclick={() => removeField('indicador_vd')} disabled={metaCounts.indicador_vd <= 1}>−</button>
+				<span class="count-badge">{metaCounts.indicador_vd}</span>
+				<button class="btn-count" onclick={() => addField('indicador_vd')}>+</button>
+			</div>
+		</div>
+		<div class="campos-list">
+			{#each Array.from({length: metaCounts.indicador_vd}, (_, i) => i + 1) as i (i)}
+				{@render renderCampo(`indicador_vd_${i}`, `Indicador V.D. ${i}`, dimOptions('vd'))}
+			{/each}
+		</div>
+	</div>
+
+	<div class="section-group">
+		<div class="group-title">Marco</div>
+		<div class="campos-list">
+			{@render renderCampo('temas_marco_teorico', 'Temas del marco teórico', null)}
+			{@render renderCampo('marco_metodologico', 'Marco metodológico', null)}
+		</div>
+	</div>
+
+	<!-- Verificar congruencia -->
+	<div class="congruencia-section">
+		<button class="btn-congruencia" onclick={handleVerificarCongruencia} disabled={congruenciaLoading}>
+			{congruenciaLoading ? 'Verificando...' : 'IA: Verificar congruencia'}
+		</button>
+
+		{#if congruenciaWarnings.length > 0}
+			<div class="congruencia-warning">
+				Campos vacíos: {congruenciaWarnings.join(', ')}
+			</div>
+		{/if}
+
+		{#if congruenciaLoading}
+			<div class="congruencia-result">
+				<p class="loading">Analizando congruencia...</p>
+			</div>
+		{:else if congruenciaResult}
+			<div class="congruencia-result">
+				<div class="congruencia-header">
+					<span class="label">Verificación de Congruencia</span>
+					<button class="btn-close" onclick={() => { congruenciaResult = ''; congruenciaWarnings = []; }}>Cerrar</button>
+				</div>
+				<div class="congruencia-lines">
+					{#each congruenciaResult.split('\n') as linea}
+						{#if linea.trim()}
+							<p class="congruencia-line" class:ok={linea.includes('✓')} class:warn={linea.includes('~')} class:bad={linea.includes('✗')}>{linea}</p>
+						{/if}
+					{/each}
+				</div>
+			</div>
+		{/if}
+	</div>
+
+{:else}
+	<!-- Generic view for other matrices -->
+	<div class="campos-list">
+		{#each matrizInfo.campos as { key, label } (key)}
+			{@render renderCampo(key, label, null)}
+		{/each}
+	</div>
+{/if}
+
+{#if selectedCount > 0}
+	<div class="selection-bar">
+		<span class="sel-count">{selectedCount} seleccionado{selectedCount > 1 ? 's' : ''}</span>
+		<div class="sel-actions">
+			<button class="sel-btn" onclick={copiarTexto}>Copiar texto</button>
+			<button class="sel-btn" onclick={copiarCSV}>Copiar CSV</button>
+			<button class="sel-btn sel-clear" onclick={clearSelection}>Limpiar</button>
+		</div>
+	</div>
 {/if}
 
 <style>
@@ -344,14 +694,78 @@
 		font-weight: 700;
 	}
 
+	/* Section groups */
+	.section-group {
+		margin-bottom: 28px;
+	}
+	.group-title {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		font-family: var(--font-mono);
+		font-size: 0.9375rem;
+		font-weight: 700;
+		color: var(--accent);
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		padding: 10px 16px;
+		background: var(--bg-surface);
+		border: 1px solid var(--border);
+		border-radius: var(--radius-sm);
+		margin-bottom: 12px;
+	}
+	.group-controls {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+	.btn-count {
+		width: 32px;
+		height: 32px;
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 1.25rem;
+		font-weight: 700;
+		background: var(--bg-elevated);
+		color: var(--text-primary);
+		border: 1px solid var(--border);
+		cursor: pointer;
+		transition: all 0.2s;
+		font-family: var(--font-sans);
+	}
+	.btn-count:hover:not(:disabled) {
+		border-color: var(--accent);
+		background: var(--bg-hover);
+	}
+	.btn-count:disabled {
+		opacity: 0.3;
+		cursor: not-allowed;
+	}
+	.count-badge {
+		font-family: var(--font-mono);
+		font-size: 0.875rem;
+		color: var(--text-secondary);
+		min-width: 20px;
+		text-align: center;
+	}
+
+	/* Campos grid */
 	.campos-list {
 		display: grid;
 		grid-template-columns: 1fr;
 		gap: 20px;
 	}
+	.campos-list.single {
+		grid-template-columns: 1fr;
+	}
 	@media (min-width: 1024px) {
 		.campos-list {
 			grid-template-columns: repeat(2, 1fr);
+		}
+		.campos-list.single {
+			grid-template-columns: 1fr;
 		}
 	}
 
@@ -370,6 +784,14 @@
 		border-color: var(--accent-dim);
 	}
 
+	.campo-top {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 12px;
+		flex-wrap: wrap;
+	}
+
 	.campo-label {
 		font-family: var(--font-mono);
 		font-size: 0.875rem;
@@ -378,6 +800,37 @@
 		display: block;
 		font-weight: 700;
 		letter-spacing: 0.08em;
+	}
+
+	/* Connection */
+	.conn-select {
+		font-family: var(--font-mono);
+		font-size: 0.75rem;
+		padding: 6px 28px 6px 10px;
+		border-radius: var(--radius-sm);
+		background: var(--bg-elevated);
+		border: 1px solid var(--border);
+		color: var(--text-secondary);
+		min-width: 0;
+		max-width: 220px;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	.conn-select:focus {
+		border-color: var(--accent);
+	}
+	.conn-badge {
+		font-family: var(--font-mono);
+		font-size: 0.75rem;
+		padding: 4px 10px;
+		border-radius: var(--radius-sm);
+		background: rgba(165, 180, 252, 0.1);
+		border: 1px solid rgba(165, 180, 252, 0.25);
+		color: var(--accent);
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 
 	textarea {
@@ -612,6 +1065,79 @@
 	.congruencia-line.bad {
 		border-left-color: var(--error);
 		color: var(--error);
+	}
+
+	/* Checkbox & label row */
+	.campo-label-row {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+	}
+	.campo-check {
+		width: 18px;
+		height: 18px;
+		accent-color: var(--accent);
+		cursor: pointer;
+		flex-shrink: 0;
+	}
+
+	/* Selection floating bar */
+	.selection-bar {
+		position: fixed;
+		bottom: 72px;
+		left: 50%;
+		transform: translateX(-50%);
+		display: flex;
+		align-items: center;
+		gap: 16px;
+		padding: 12px 24px;
+		background: var(--bg-elevated);
+		border: 1px solid var(--accent-dim);
+		border-radius: var(--radius-lg);
+		box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+		z-index: 100;
+		max-width: calc(100vw - 32px);
+		flex-wrap: wrap;
+		justify-content: center;
+	}
+	.sel-count {
+		font-family: var(--font-mono);
+		font-size: 0.875rem;
+		color: var(--accent);
+		font-weight: 700;
+		white-space: nowrap;
+	}
+	.sel-actions {
+		display: flex;
+		gap: 8px;
+	}
+	.sel-btn {
+		padding: 8px 16px;
+		border-radius: var(--radius-sm);
+		font-size: 0.8125rem;
+		font-family: var(--font-mono);
+		font-weight: 600;
+		background: var(--accent);
+		color: #000;
+		border: none;
+		cursor: pointer;
+		transition: transform 0.1s, opacity 0.2s;
+		white-space: nowrap;
+	}
+	.sel-btn:hover {
+		opacity: 0.9;
+	}
+	.sel-btn:active {
+		transform: scale(0.96);
+	}
+	.sel-btn.sel-clear {
+		background: transparent;
+		color: var(--text-muted);
+		border: 1px solid var(--border);
+	}
+	.sel-btn.sel-clear:hover {
+		color: var(--text-primary);
+		border-color: var(--text-muted);
 	}
 
 	.loading {

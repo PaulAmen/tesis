@@ -154,18 +154,13 @@ SUGERENCIA: [Una acción concreta para mejorar el borrador]`
 }
 
 export async function verificarCongruencia(campos: Record<string, string>): Promise<string> {
+	const lineas = Object.entries(campos)
+		.map(([label, valor]) => `${label}: ${valor || '(vacío)'}`)
+		.join('\n');
 	return llamarGemini(
 		`Analiza la congruencia interna de los elementos centrales de esta tesis doctoral bajo estructura UIIX.
 
-Objetivo general: ${campos.objetivo_general || '(vacío)'}
-Objetivos específicos: ${campos.objetivos_especificos || '(vacío)'}
-Hipótesis: ${campos.hipotesis || '(vacío)'}
-Variable independiente: ${campos.variable_independiente || '(vacío)'}
-Variable dependiente: ${campos.variable_dependiente || '(vacío)'}
-Dimensiones VI: ${campos.dimensiones_vi || '(vacío)'}
-Dimensiones VD: ${campos.dimensiones_vd || '(vacío)'}
-Indicadores VI: ${campos.indicadores_vi || '(vacío)'}
-Indicadores VD: ${campos.indicadores_vd || '(vacío)'}
+${lineas}
 
 Responde exactamente en este formato:
 
