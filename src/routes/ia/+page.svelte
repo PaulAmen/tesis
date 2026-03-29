@@ -2,6 +2,7 @@
 	import { citasStore } from '$lib/stores/data';
 	import { mapaTematicoGlobal, lagunasAnalisis, estructuraCap2 } from '$lib/services/ia';
 	import type { Cita } from '$lib/types';
+	import { fade, fly, slide } from 'svelte/transition';
 
 	let mode = $state<'mapa' | 'lagunas' | 'estructura' | null>(null);
 	let result = $state('');
@@ -38,64 +39,83 @@
 	}
 </script>
 
-<h1>IA Global</h1>
-<p class="subtitle">Análisis inteligente de todas tus citas ({$citasStore.length} cargadas)</p>
+<div in:fade>
+	<h1>IA Global</h1>
+	<p class="subtitle">Análisis inteligente de tu biblioteca ({$citasStore.length} citas)</p>
 
-<div class="consultas">
-	<button class="consulta-card" class:active={mode === 'mapa'} onclick={() => handleConsulta('mapa')}>
-		<div class="consulta-icon">&#9673;</div>
-		<div class="consulta-info">
-			<div class="consulta-title">Mapa temático</div>
-			<div class="consulta-desc">Temas principales y cómo se conectan</div>
-		</div>
-	</button>
+	<div class="consultas">
+		<button class="consulta-card" class:active={mode === 'mapa'} onclick={() => handleConsulta('mapa')}>
+			<div class="consulta-icon">
+				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+			</div>
+			<div class="consulta-info">
+				<div class="consulta-title">Mapa Temático</div>
+				<div class="consulta-desc">Conexiones y núcleos conceptuales</div>
+			</div>
+		</button>
 
-	<button class="consulta-card" class:active={mode === 'lagunas'} onclick={() => handleConsulta('lagunas')}>
-		<div class="consulta-icon">&#9888;</div>
-		<div class="consulta-info">
-			<div class="consulta-title">Lagunas</div>
-			<div class="consulta-desc">Secciones con pocas citas, qué falta buscar</div>
-		</div>
-	</button>
+		<button class="consulta-card" class:active={mode === 'lagunas'} onclick={() => handleConsulta('lagunas')}>
+			<div class="consulta-icon">
+				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+			</div>
+			<div class="consulta-info">
+				<div class="consulta-title">Lagunas</div>
+				<div class="consulta-desc">Vacíos y áreas que requieren más fuentes</div>
+			</div>
+		</button>
 
-	<button class="consulta-card" class:active={mode === 'estructura'} onclick={() => handleConsulta('estructura')}>
-		<div class="consulta-icon">&#9776;</div>
-		<div class="consulta-info">
-			<div class="consulta-title">Estructura Cap. 2</div>
-			<div class="consulta-desc">Orden sugerido para los Fundamentos Teóricos</div>
+		<button class="consulta-card" class:active={mode === 'estructura'} onclick={() => handleConsulta('estructura')}>
+			<div class="consulta-icon">
+				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="10" x2="3" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="21" y1="18" x2="3" y2="18"></line></svg>
+			</div>
+			<div class="consulta-info">
+				<div class="consulta-title">Estructura Cap. 2</div>
+				<div class="consulta-desc">Propuesta de orden narrativo y lógico</div>
+			</div>
+		</button>
+	</div>
+
+	{#if loading}
+		<div class="result-box loading-box" in:fade>
+			<div class="spinner"></div>
+			<p>Procesando con Inteligencia Artificial...</p>
 		</div>
-	</button>
+	{:else if result}
+		<div class="result-box" in:fly={{ y: 20, duration: 400 }}>
+			<div class="result-header">
+				<span>Resultado del análisis</span>
+				<button class="copy-btn" onclick={() => navigator.clipboard.writeText(result)}>Copiar</button>
+			</div>
+			<div class="result-content">
+				<pre>{result}</pre>
+			</div>
+		</div>
+	{/if}
 </div>
-
-{#if loading}
-	<div class="result-box">
-		<p class="loading">Analizando con IA...</p>
-	</div>
-{:else if result}
-	<div class="result-box">
-		<pre>{result}</pre>
-	</div>
-{/if}
 
 <style>
 	h1 {
-		font-size: 2.5rem;
-		font-weight: 700;
+		font-size: 2.75rem;
+		font-weight: 800;
 		margin-bottom: 8px;
 		letter-spacing: -0.04em;
+		background: linear-gradient(to right, var(--accent), #fff);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
 	}
 	.subtitle {
 		font-family: var(--font-mono);
 		font-size: 1rem;
 		color: var(--text-secondary);
 		margin-bottom: 40px;
-		font-weight: 500;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
 	}
 	.consultas {
 		display: grid;
 		grid-template-columns: 1fr;
-		gap: 16px;
-		margin-bottom: 32px;
+		gap: 20px;
+		margin-bottom: 40px;
 	}
 	@media (min-width: 768px) {
 		.consultas {
@@ -105,75 +125,112 @@
 	.consulta-card {
 		display: flex;
 		flex-direction: column;
-		align-items: flex-start;
-		gap: 16px;
-		padding: 24px;
+		gap: 20px;
+		padding: 28px;
 		background: var(--bg-surface);
-		border: 2px solid var(--border);
+		border: 1px solid var(--border);
 		border-radius: var(--radius-md);
 		cursor: pointer;
 		color: inherit;
 		text-align: left;
-		transition: all 0.2s;
+		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 		width: 100%;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 	}
 	.consulta-card:hover {
-		border-color: var(--accent);
+		border-color: var(--accent-dim);
 		background: var(--bg-elevated);
-		transform: translateY(-4px);
+		transform: translateY(-6px);
+		box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
 	}
 	.consulta-card.active {
 		border-color: var(--accent);
-		background: rgba(165, 180, 252, 0.05);
-		box-shadow: 0 0 0 4px rgba(165, 180, 252, 0.1);
+		background: rgba(165, 180, 252, 0.08);
+		box-shadow: 0 0 0 4px rgba(165, 180, 252, 0.15);
 	}
 	.consulta-icon {
-		font-size: 2rem;
 		background: var(--bg-elevated);
-		width: 56px;
-		height: 56px;
+		width: 52px;
+		height: 52px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		border-radius: var(--radius-sm);
+		border-radius: 12px;
 		border: 1px solid var(--border);
-	}
-	.consulta-info {
-		flex: 1;
+		color: var(--accent);
 	}
 	.consulta-title {
 		font-weight: 700;
 		font-size: 1.25rem;
-		margin-bottom: 6px;
+		margin-bottom: 8px;
 		color: var(--text-primary);
 	}
 	.consulta-desc {
-		font-size: 0.9375rem;
+		font-size: 0.95rem;
 		color: var(--text-secondary);
-		line-height: 1.4;
+		line-height: 1.5;
 	}
+
 	.result-box {
 		background: var(--bg-surface);
-		border: 2px solid var(--border);
+		border: 1px solid var(--border);
 		border-radius: var(--radius-lg);
-		padding: 24px;
-		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+		padding: 32px;
+		box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+		position: relative;
 	}
-	.result-box pre {
+	.result-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 24px;
+		padding-bottom: 16px;
+		border-bottom: 1px solid var(--border);
+		font-family: var(--font-mono);
+		font-size: 0.8rem;
+		text-transform: uppercase;
+		color: var(--text-muted);
+		letter-spacing: 0.1em;
+	}
+	.copy-btn {
+		background: var(--bg-hover);
+		padding: 6px 12px;
+		border-radius: 6px;
+		font-size: 0.75rem;
+		font-weight: 600;
+		color: var(--text-primary);
+		transition: background 0.2s;
+	}
+	.copy-btn:hover {
+		background: var(--accent);
+		color: #000;
+	}
+	.result-content pre {
 		white-space: pre-wrap;
 		word-wrap: break-word;
 		font-family: var(--font-serif);
-		font-size: 1.125rem;
-		line-height: 1.8;
+		font-size: 1.15rem;
+		line-height: 1.85;
 		color: var(--text-primary);
 	}
-	.loading {
-		text-align: center;
-		color: var(--accent);
-		font-style: italic;
-		font-size: 1.125rem;
-		padding: 20px 0;
-		font-weight: 600;
+
+	.loading-box {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 20px;
+		min-height: 200px;
+	}
+	.spinner {
+		width: 48px;
+		height: 48px;
+		border: 4px solid rgba(165, 180, 252, 0.1);
+		border-top-color: var(--accent);
+		border-radius: 50%;
+		animation: spin 1s linear infinite;
+	}
+	@keyframes spin {
+		to { transform: rotate(360deg); }
 	}
 </style>

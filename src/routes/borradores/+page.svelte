@@ -332,7 +332,16 @@
 				<div class="revision-lines">
 					{#each revisionResult.split('\n') as linea}
 						{#if linea.trim()}
-							<p class="revision-line" class:ok={linea.includes('✓')} class:warn={linea.includes('~')} class:bad={linea.includes('✗')}>{linea}</p>
+							<p class="revision-line" class:ok={linea.includes('✓')} class:warn={linea.includes('~')} class:bad={linea.includes('✗')}>
+								{#if linea.includes('✓')}
+									<span class="status-indicator">[CORRECTO]</span>
+								{:else if linea.includes('~')}
+									<span class="status-indicator">[SUGERENCIA]</span>
+								{:else if linea.includes('✗')}
+									<span class="status-indicator">[REVISAR]</span>
+								{/if}
+								{linea.replace(/[✓~✗]/g, '').trim()}
+							</p>
 						{/if}
 					{/each}
 				</div>
@@ -626,21 +635,35 @@
 		font-family: var(--font-mono);
 		font-size: 0.875rem;
 		line-height: 1.5;
-		padding: 8px 12px;
+		padding: 12px 16px;
 		border-radius: var(--radius-sm);
 		background: var(--bg-elevated);
-		border-left: 3px solid var(--border);
+		border-left: 4px solid var(--border);
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+	.status-indicator {
+		font-weight: 800;
+		font-size: 0.7rem;
+		letter-spacing: 0.05em;
 	}
 	.revision-line.ok {
 		border-left-color: var(--success);
+	}
+	.revision-line.ok .status-indicator {
 		color: var(--success);
 	}
 	.revision-line.warn {
 		border-left-color: var(--warning);
+	}
+	.revision-line.warn .status-indicator {
 		color: var(--warning);
 	}
 	.revision-line.bad {
 		border-left-color: var(--error);
+	}
+	.revision-line.bad .status-indicator {
 		color: var(--error);
 	}
 

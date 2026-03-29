@@ -626,7 +626,16 @@
 				<div class="congruencia-lines">
 					{#each congruenciaResult.split('\n') as linea}
 						{#if linea.trim()}
-							<p class="congruencia-line" class:ok={linea.includes('✓')} class:warn={linea.includes('~')} class:bad={linea.includes('✗')}>{linea}</p>
+							<p class="congruencia-line" class:ok={linea.includes('✓')} class:warn={linea.includes('~')} class:bad={linea.includes('✗')}>
+								{#if linea.includes('✓')}
+									<span class="status-indicator">[CONGRUENTE]</span>
+								{:else if linea.includes('~')}
+									<span class="status-indicator">[ATENCIÓN]</span>
+								{:else if linea.includes('✗')}
+									<span class="status-indicator">[INCONGRUENTE]</span>
+								{/if}
+								{linea.replace(/[✓~✗]/g, '').trim()}
+							</p>
 						{/if}
 					{/each}
 				</div>
@@ -1049,21 +1058,35 @@
 		font-family: var(--font-mono);
 		font-size: 0.875rem;
 		line-height: 1.5;
-		padding: 10px 14px;
+		padding: 12px 16px;
 		border-radius: var(--radius-sm);
 		background: var(--bg-elevated);
-		border-left: 3px solid var(--border);
+		border-left: 4px solid var(--border);
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+	.status-indicator {
+		font-weight: 800;
+		font-size: 0.7rem;
+		letter-spacing: 0.05em;
 	}
 	.congruencia-line.ok {
 		border-left-color: var(--success);
+	}
+	.congruencia-line.ok .status-indicator {
 		color: var(--success);
 	}
 	.congruencia-line.warn {
 		border-left-color: var(--warning);
+	}
+	.congruencia-line.warn .status-indicator {
 		color: var(--warning);
 	}
 	.congruencia-line.bad {
 		border-left-color: var(--error);
+	}
+	.congruencia-line.bad .status-indicator {
 		color: var(--error);
 	}
 
