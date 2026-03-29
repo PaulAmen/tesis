@@ -5,7 +5,7 @@
 	import {
 		obtenerBorradoresPorSeccion, crearBorrador, actualizarBorrador, eliminarBorrador
 	} from '$lib/services/borradores';
-	import { redactarParrafo } from '$lib/services/ia';
+	import { redactarParrafo, revisarBorrador } from '$lib/services/ia';
 	import { SECCIONES_UIIX, GRUPOS_SECCIONES } from '$lib/types';
 	import type { Borrador, SeccionUIIX, Cita } from '$lib/types';
 
@@ -28,6 +28,8 @@
 	// IA
 	let iaLoading = $state(false);
 	let iaResult = $state('');
+	let revisionLoading = $state(false);
+	let revisionResult = $state('');
 
 	let citasFiltradas = $derived.by(() => {
 		const q = citaBusqueda.toLowerCase().trim();
@@ -54,6 +56,7 @@
 	function handleSeccionChange() {
 		borradorActual = null;
 		iaResult = '';
+		revisionResult = '';
 		cargarBorradores();
 	}
 
@@ -63,6 +66,7 @@
 		editorContenido = '';
 		editorCitasUsadas = [];
 		iaResult = '';
+		revisionResult = '';
 		// Use a sentinel to indicate "new"
 		borradorActual = {
 			id: '__new__',
@@ -171,6 +175,27 @@
 		iaResult = '';
 		showToast('Párrafo insertado');
 	}
+
+	async function handleIARevisar() {
+		if (!seccionActual || !editorContenido.trim()) {
+			showToast('Escribe algo antes de revisar', 'error');
+			return;
+		}
+		revisionLoading = true;
+		revisionResult = '';
+		try {
+			const seccionNombre = SECCIONES_UIIX[seccionActual as SeccionUIIX];
+			revisionResult = await revisarBorrador({
+				seccion: seccionNombre,
+				titulo: editorTitulo,
+				contenido: editorContenido
+			});
+		} catch (e: any) {
+			revisionResult = `Error: ${e.message}`;
+		} finally {
+			revisionLoading = false;
+		}
+	}
 </script>
 
 <h1>Borradores</h1>
@@ -243,7 +268,10 @@
 				Insertar cita
 			</button>
 			<button class="btn btn-outline" onclick={handleIARedactar} disabled={iaLoading}>
-				{iaLoading ? 'Generando...' : 'IA: Redactar párrafo'}
+				{iaLoading ? 'Generando...' : 'IA: Redactar'}
+			</button>
+			<button class="btn btn-outline btn-revisar" onclick={handleIARevisar} disabled={revisionLoading}>
+				{revisionLoading ? 'Revisando...' : 'IA: Revisar'}
 			</button>
 			<button class="btn" onclick={guardar} disabled={guardando}>
 				{guardando ? 'Guardando...' : 'Guardar'}
@@ -288,6 +316,26 @@
 					<button class="btn btn-sm" onclick={insertarResultadoIA}>Insertar</button>
 				</div>
 				<pre>{iaResult}</pre>
+			</div>
+		{/if}
+
+		{#if revisionLoading}
+			<div class="revision-result">
+				<p class="loading">Revisando borrador...</p>
+			</div>
+		{:else if revisionResult}
+			<div class="revision-result">
+				<div class="revision-header">
+					<span class="label">Revisión IA</span>
+					<button class="btn-link" onclick={() => revisionResult = ''}>Cerrar</button>
+				</div>
+				<div class="revision-lines">
+					{#each revisionResult.split('\n') as linea}
+						{#if linea.trim()}
+							<p class="revision-line" class:ok={linea.includes('✓')} class:warn={linea.includes('~')} class:bad={linea.includes('✗')}>{linea}</p>
+						{/if}
+					{/each}
+				</div>
 			</div>
 		{/if}
 	</div>
@@ -549,6 +597,51 @@
 		font-family: var(--font-serif);
 		font-size: 0.9375rem;
 		line-height: 1.6;
+	}
+
+	/* Revision */
+	.btn-revisar {
+		border-color: var(--warning);
+		color: var(--warning);
+	}
+	.revision-result {
+		background: var(--bg-base);
+		border: 2px solid var(--border);
+		border-radius: var(--radius-md);
+		padding: 20px;
+		margin-top: 12px;
+	}
+	.revision-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 12px;
+	}
+	.revision-lines {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
+	.revision-line {
+		font-family: var(--font-mono);
+		font-size: 0.875rem;
+		line-height: 1.5;
+		padding: 8px 12px;
+		border-radius: var(--radius-sm);
+		background: var(--bg-elevated);
+		border-left: 3px solid var(--border);
+	}
+	.revision-line.ok {
+		border-left-color: var(--success);
+		color: var(--success);
+	}
+	.revision-line.warn {
+		border-left-color: var(--warning);
+		color: var(--warning);
+	}
+	.revision-line.bad {
+		border-left-color: var(--error);
+		color: var(--error);
 	}
 
 	.loading, .empty {

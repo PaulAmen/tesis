@@ -94,7 +94,7 @@
 		background: var(--bg-base);
 		color: var(--text-primary);
 		font-family: var(--font-serif);
-		font-size: 18px;
+		font-size: 21px;
 		line-height: 1.65;
 		-webkit-font-smoothing: antialiased;
 		min-height: 100vh;

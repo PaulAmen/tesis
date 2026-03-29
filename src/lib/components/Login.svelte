@@ -74,15 +74,15 @@
 		justify-content: center;
 	}
 	h1 {
-		font-size: 2.25rem;
+		font-size: 2.75rem;
 		font-weight: 700;
-		margin-bottom: 8px;
+		margin-bottom: 12px;
 		letter-spacing: -0.02em;
 	}
 	.subtitle {
 		color: var(--text-secondary);
-		font-size: 1.125rem;
-		margin-bottom: 40px;
+		font-size: 1.25rem;
+		margin-bottom: 48px;
 	}
 	.btn-google {
 		display: flex;
@@ -93,9 +93,9 @@
 		background: #ffffff;
 		color: #000000;
 		font-weight: 600;
-		padding: 16px;
+		padding: 18px;
 		border-radius: var(--radius-md);
-		font-size: 1.125rem;
+		font-size: 1.25rem;
 		transition: transform 0.1s, opacity 0.2s, background-color 0.2s;
 	}
 	.btn-google:hover {
@@ -110,7 +110,7 @@
 	}
 	.error {
 		color: var(--error);
-		font-size: 1rem;
+		font-size: 1.125rem;
 		margin-bottom: 24px;
 		background: rgba(252, 165, 165, 0.1);
 		padding: 12px;

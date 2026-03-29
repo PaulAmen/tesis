@@ -3,7 +3,7 @@
 	import { citasStore } from '$lib/stores/data';
 	import { showToast } from '$lib/stores/toast';
 	import { obtenerCamposPorTipo, guardarCampo } from '$lib/services/matrices';
-	import { completarCampoMatriz } from '$lib/services/ia';
+	import { completarCampoMatriz, verificarCongruencia } from '$lib/services/ia';
 	import { MATRICES } from '$lib/types';
 	import type { TipoMatriz, CampoMatriz, Cita } from '$lib/types';
 
@@ -28,6 +28,11 @@
 	let iaCampo = $state<string | null>(null);
 	let iaResult = $state('');
 	let iaLoading = $state(false);
+
+	// Congruencia
+	let congruenciaLoading = $state(false);
+	let congruenciaResult = $state('');
+	let congruenciaWarnings = $state<string[]>([]);
 
 	let matrizInfo = $derived(MATRICES[tipoActual]);
 
@@ -137,6 +142,44 @@
 			.then(() => showToast('Texto insertado y guardado'))
 			.catch(() => showToast('Error al guardar', 'error'));
 	}
+
+	const CAMPOS_CONGRUENCIA = [
+		'objetivo_general', 'objetivos_especificos', 'hipotesis',
+		'variable_independiente', 'variable_dependiente',
+		'dimensiones_vi', 'dimensiones_vd',
+		'indicadores_vi', 'indicadores_vd'
+	];
+
+	const LABELS_CONGRUENCIA: Record<string, string> = {
+		objetivo_general: 'Objetivo general',
+		objetivos_especificos: 'Objetivos específicos',
+		hipotesis: 'Hipótesis',
+		variable_independiente: 'Variable independiente',
+		variable_dependiente: 'Variable dependiente',
+		dimensiones_vi: 'Dimensiones V.I.',
+		dimensiones_vd: 'Dimensiones V.D.',
+		indicadores_vi: 'Indicadores V.I.',
+		indicadores_vd: 'Indicadores V.D.'
+	};
+
+	async function handleVerificarCongruencia() {
+		const vacios = CAMPOS_CONGRUENCIA.filter(k => !campos[k]?.contenido?.trim());
+		congruenciaWarnings = vacios.map(k => LABELS_CONGRUENCIA[k]);
+
+		congruenciaLoading = true;
+		congruenciaResult = '';
+		try {
+			const data: Record<string, string> = {};
+			for (const k of CAMPOS_CONGRUENCIA) {
+				data[k] = campos[k]?.contenido ?? '';
+			}
+			congruenciaResult = await verificarCongruencia(data);
+		} catch (e: any) {
+			congruenciaResult = `Error: ${e.message}`;
+		} finally {
+			congruenciaLoading = false;
+		}
+	}
 </script>
 
 <h1>Matrices</h1>
@@ -225,6 +268,40 @@
 			</div>
 		{/each}
 	</div>
+
+	{#if tipoActual === 'congruencia'}
+		<div class="congruencia-section">
+			<button class="btn-congruencia" onclick={handleVerificarCongruencia} disabled={congruenciaLoading}>
+				{congruenciaLoading ? 'Verificando...' : 'IA: Verificar congruencia'}
+			</button>
+
+			{#if congruenciaWarnings.length > 0}
+				<div class="congruencia-warning">
+					Campos vacíos: {congruenciaWarnings.join(', ')}
+				</div>
+			{/if}
+
+			{#if congruenciaLoading}
+				<div class="congruencia-result">
+					<p class="loading">Analizando congruencia...</p>
+				</div>
+			{:else if congruenciaResult}
+				<div class="congruencia-result">
+					<div class="congruencia-header">
+						<span class="label">Verificación de Congruencia</span>
+						<button class="btn-close" onclick={() => { congruenciaResult = ''; congruenciaWarnings = []; }}>Cerrar</button>
+					</div>
+					<div class="congruencia-lines">
+						{#each congruenciaResult.split('\n') as linea}
+							{#if linea.trim()}
+								<p class="congruencia-line" class:ok={linea.includes('✓')} class:warn={linea.includes('~')} class:bad={linea.includes('✗')}>{linea}</p>
+							{/if}
+						{/each}
+					</div>
+				</div>
+			{/if}
+		</div>
+	{/if}
 {/if}
 
 <style>
@@ -453,6 +530,88 @@
 	}
 	.btn-insert:active {
 		transform: scale(0.96);
+	}
+
+	/* Congruencia */
+	.congruencia-section {
+		margin-top: 32px;
+	}
+	.btn-congruencia {
+		width: 100%;
+		padding: 16px;
+		border-radius: var(--radius-md);
+		font-size: 1.0625rem;
+		font-weight: 700;
+		font-family: var(--font-sans);
+		background: var(--bg-surface);
+		color: var(--warning);
+		border: 2px solid var(--warning);
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+	.btn-congruencia:hover {
+		background: rgba(253, 224, 71, 0.1);
+	}
+	.btn-congruencia:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+	.congruencia-warning {
+		margin-top: 12px;
+		padding: 10px 14px;
+		border-radius: var(--radius-sm);
+		background: rgba(253, 224, 71, 0.1);
+		border: 1px solid rgba(253, 224, 71, 0.3);
+		color: var(--warning);
+		font-family: var(--font-mono);
+		font-size: 0.8125rem;
+	}
+	.congruencia-result {
+		margin-top: 16px;
+		background: var(--bg-base);
+		border: 2px solid var(--border);
+		border-radius: var(--radius-md);
+		padding: 24px;
+	}
+	.congruencia-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 16px;
+	}
+	.btn-close {
+		font-family: var(--font-mono);
+		font-size: 0.8125rem;
+		color: var(--text-muted);
+		background: none;
+		border: none;
+		cursor: pointer;
+	}
+	.congruencia-lines {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
+	.congruencia-line {
+		font-family: var(--font-mono);
+		font-size: 0.875rem;
+		line-height: 1.5;
+		padding: 10px 14px;
+		border-radius: var(--radius-sm);
+		background: var(--bg-elevated);
+		border-left: 3px solid var(--border);
+	}
+	.congruencia-line.ok {
+		border-left-color: var(--success);
+		color: var(--success);
+	}
+	.congruencia-line.warn {
+		border-left-color: var(--warning);
+		color: var(--warning);
+	}
+	.congruencia-line.bad {
+		border-left-color: var(--error);
+		color: var(--error);
 	}
 
 	.loading {
