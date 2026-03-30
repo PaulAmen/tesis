@@ -1,0 +1,4 @@
+# Ignorar todo lo que no sea código GAS al hacer `clasp push`
+**
+!Code.js
+!appsscript.json

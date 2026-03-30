@@ -123,6 +123,41 @@ export interface CampoMatriz {
 	actualizado_en: Date;
 }
 
+// ---------------------------------------------------------------
+// Exportación a Google Docs / PDF (via Google Apps Script)
+// ---------------------------------------------------------------
+
+export type ExportAction = 'generate_pdf' | 'generate_doc';
+
+/**
+ * Payload enviado al Web App de Google Apps Script.
+ * `documentData` mapea cada clave de SeccionUIIX a su contenido en texto plano.
+ * El backend buscará el placeholder {{CLAVE_EN_MAYUSCULAS}} en la plantilla.
+ */
+export interface ExportPayload {
+	action: ExportAction;
+	templateId: string;
+	title?: string;
+	documentData: Partial<Record<SeccionUIIX, string>>;
+}
+
+/** Respuesta del Web App de GAS en caso de éxito. */
+export interface ExportResult {
+	success: true;
+	url: string;
+	action: ExportAction;
+}
+
+/** Respuesta del Web App de GAS en caso de error. */
+export interface ExportError {
+	success: false;
+	error: string;
+}
+
+export type ExportResponse = ExportResult | ExportError;
+
+// ---------------------------------------------------------------
+
 export const MATRICES: Record<TipoMatriz, { nombre: string; campos: { key: string; label: string }[] }> = {
 	congruencia: {
 		nombre: 'Matriz de Congruencia',

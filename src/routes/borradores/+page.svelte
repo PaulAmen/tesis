@@ -8,6 +8,7 @@
 	import { redactarParrafo, revisarBorrador } from '$lib/services/ia';
 	import { SECCIONES_UIIX, GRUPOS_SECCIONES } from '$lib/types';
 	import type { Borrador, SeccionUIIX, Cita } from '$lib/types';
+	import ExportarTesis from '$lib/components/ExportarTesis.svelte';
 
 	let seccionActual = $state<SeccionUIIX | ''>('');
 	let borradores = $state<Borrador[]>([]);
@@ -199,6 +200,8 @@
 </script>
 
 <h1>Borradores</h1>
+
+<ExportarTesis />
 
 <div class="seccion-selector">
 	<label for="seccion-select">Sección UIIX</label>
