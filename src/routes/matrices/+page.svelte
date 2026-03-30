@@ -29,7 +29,8 @@
 	let metaCounts = $state<Record<string, number>>({
 		oe: 4, hipotesis: 3,
 		dimension_vi: 3, dimension_vd: 3,
-		indicador_vi: 3, indicador_vd: 3
+		indicador_vi: 3, indicador_vd: 3,
+		tema_mt: 3
 	});
 	let conexiones = $state<Record<string, string>>({});
 
@@ -102,7 +103,7 @@
 		for (let i = 1; i <= metaCounts.dimension_vd; i++) r.push({ key: `dimension_vd_${i}`, label: `Dimensión V.D. ${i}` });
 		for (let i = 1; i <= metaCounts.indicador_vi; i++) r.push({ key: `indicador_vi_${i}`, label: `Indicador V.I. ${i}` });
 		for (let i = 1; i <= metaCounts.indicador_vd; i++) r.push({ key: `indicador_vd_${i}`, label: `Indicador V.D. ${i}` });
-		r.push({ key: 'temas_marco_teorico', label: 'Temas del marco teórico' });
+		for (let i = 1; i <= metaCounts.tema_mt; i++) r.push({ key: `tema_mt_${i}`, label: `Tema marco teórico ${i}` });
 		r.push({ key: 'marco_metodologico', label: 'Marco metodológico' });
 		return r;
 	}
@@ -335,7 +336,7 @@
 	async function handleVerificarCongruencia() {
 		const allKeys = allCongruenciaKeys();
 		const vacios = allKeys
-			.filter(({ key }) => !['tema', 'pregunta_investigacion', 'temas_marco_teorico', 'marco_metodologico'].includes(key))
+			.filter(({ key }) => !['tema', 'pregunta_investigacion', 'marco_metodologico'].includes(key) && !key.startsWith('tema_mt_'))
 			.filter(({ key }) => !campos[key]?.contenido?.trim());
 		congruenciaWarnings = vacios.map(({ label }) => label);
 
@@ -344,7 +345,7 @@
 		try {
 			const data: Record<string, string> = {};
 			for (const { key, label } of allKeys) {
-				if (!['tema', 'pregunta_investigacion', 'temas_marco_teorico', 'marco_metodologico'].includes(key)) {
+				if (!['tema', 'pregunta_investigacion', 'marco_metodologico'].includes(key) && !key.startsWith('tema_mt_')) {
 					data[label] = campos[key]?.contenido ?? '';
 				}
 			}
@@ -593,10 +594,25 @@
 		</div>
 	</div>
 
-	<div class="section-group group-marco">
-		<div class="group-title">Marco</div>
+	<div class="section-group">
+		<div class="group-title">
+			Temas del Marco Teórico
+			<div class="group-controls">
+				<button class="btn-count" onclick={() => removeField('tema_mt')} disabled={metaCounts.tema_mt <= 1}>−</button>
+				<span class="count-badge">{metaCounts.tema_mt}</span>
+				<button class="btn-count" onclick={() => addField('tema_mt')}>+</button>
+			</div>
+		</div>
 		<div class="campos-list">
-			{@render renderCampo('temas_marco_teorico', 'Temas del marco teórico', null)}
+			{#each Array.from({length: metaCounts.tema_mt}, (_, i) => i + 1) as i (i)}
+				{@render renderCampo(`tema_mt_${i}`, `Tema ${i}`, null)}
+			{/each}
+		</div>
+	</div>
+
+	<div class="section-group">
+		<div class="group-title">Marco Metodológico</div>
+		<div class="campos-list single">
 			{@render renderCampo('marco_metodologico', 'Marco metodológico', null)}
 		</div>
 	</div>

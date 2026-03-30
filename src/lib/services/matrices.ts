@@ -48,12 +48,12 @@ export async function obtenerMetaCongruencia(): Promise<{
 	if (snap.exists()) {
 		const data = snap.data();
 		return {
-			counts: data.counts ?? { oe: 4, hipotesis: 3, dimension_vi: 3, dimension_vd: 3, indicador_vi: 3, indicador_vd: 3 },
+			counts: data.counts ?? { oe: 4, hipotesis: 3, dimension_vi: 3, dimension_vd: 3, indicador_vi: 3, indicador_vd: 3, tema_mt: 3 },
 			conexiones: data.conexiones ?? {}
 		};
 	}
 	return {
-		counts: { oe: 4, hipotesis: 3, dimension_vi: 3, dimension_vd: 3, indicador_vi: 3, indicador_vd: 3 },
+		counts: { oe: 4, hipotesis: 3, dimension_vi: 3, dimension_vd: 3, indicador_vi: 3, indicador_vd: 3, tema_mt: 3 },
 		conexiones: {}
 	};
 }
