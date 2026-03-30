@@ -454,8 +454,11 @@
 					{#if iaLoading}
 						<p class="loading">Analizando con IA...</p>
 					{:else}
-						<pre>{iaResult}</pre>
-						<button class="btn-insert" onclick={() => insertarIA(key)}>Insertar texto</button>
+						<textarea class="ia-textarea" bind:value={iaResult} rows="8"></textarea>
+						<div class="ia-buttons">
+							<button class="btn-insert" onclick={() => insertarIA(key)}>Insertar texto</button>
+							<button class="btn-discard" onclick={() => { iaResult = ''; iaCampo = null; }}>Descartar</button>
+						</div>
 					{/if}
 				</div>
 			{/if}
@@ -594,7 +597,7 @@
 		</div>
 	</div>
 
-	<div class="section-group">
+	<div class="section-group group-marco">
 		<div class="group-title">
 			Temas del Marco Teórico
 			<div class="group-controls">
@@ -610,7 +613,7 @@
 		</div>
 	</div>
 
-	<div class="section-group">
+	<div class="section-group group-metodo">
 		<div class="group-title">Marco Metodológico</div>
 		<div class="campos-list single">
 			{@render renderCampo('marco_metodologico', 'Marco metodológico', null)}
@@ -760,6 +763,10 @@
 	.group-marco::before { background: #f472b6; }
 	.group-marco .group-title { color: #f472b6; }
 
+	.group-metodo { border-color: rgba(45, 212, 191, 0.2); }
+	.group-metodo::before { background: #2dd4bf; }
+	.group-metodo .group-title { color: #2dd4bf; }
+
 	.group-title {
 		display: flex;
 		align-items: center;
@@ -792,6 +799,14 @@
 	@media (min-width: 1024px) {
 		.campos-list {
 			grid-template-columns: repeat(2, 1fr);
+		}
+		.campos-list.single {
+			grid-template-columns: 1fr;
+		}
+	}
+	@media (min-width: 1600px) {
+		.campos-list {
+			grid-template-columns: repeat(3, 1fr);
 		}
 		.campos-list.single {
 			grid-template-columns: 1fr;
@@ -865,11 +880,11 @@
 	}
 
 	textarea {
-		min-height: 180px;
-		font-size: 1.0625rem;
-		line-height: 1.65;
+		min-height: 320px;
+		font-size: 1.1rem;
+		line-height: 1.7;
 		background: var(--bg-base);
-		padding: 16px;
+		padding: 20px;
 		border-radius: var(--radius-sm);
 		border: 2px solid var(--border);
 	}
@@ -991,14 +1006,26 @@
 		margin-top: 4px;
 		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 	}
-	.ia-result pre {
-		white-space: pre-wrap;
-		word-wrap: break-word;
+	.ia-textarea {
+		width: 100%;
+		min-height: 160px;
 		font-family: var(--font-serif);
 		font-size: 1.0625rem;
 		line-height: 1.7;
-		margin-bottom: 16px;
 		color: var(--text-primary);
+		background: var(--bg-base);
+		border: 2px solid var(--border);
+		border-radius: var(--radius-sm);
+		padding: 16px;
+		resize: vertical;
+	}
+	.ia-textarea:focus {
+		border-color: var(--accent);
+	}
+	.ia-buttons {
+		display: flex;
+		gap: 10px;
+		margin-top: 12px;
 	}
 	.btn-insert {
 		padding: 10px 20px;
@@ -1014,6 +1041,22 @@
 	}
 	.btn-insert:active {
 		transform: scale(0.96);
+	}
+	.btn-discard {
+		padding: 10px 20px;
+		border-radius: var(--radius-sm);
+		font-size: 0.9375rem;
+		font-weight: 600;
+		background: transparent;
+		color: var(--text-muted);
+		border: 1px solid var(--border);
+		cursor: pointer;
+		font-family: var(--font-sans);
+		transition: all 0.2s;
+	}
+	.btn-discard:hover {
+		color: var(--error);
+		border-color: var(--error);
 	}
 
 	/* Congruencia */

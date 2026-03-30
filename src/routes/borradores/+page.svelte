@@ -316,9 +316,12 @@
 			<div class="ia-result">
 				<div class="ia-result-header">
 					<span class="label">Párrafo sugerido por IA</span>
-					<button class="btn btn-sm" onclick={insertarResultadoIA}>Insertar</button>
 				</div>
-				<pre>{iaResult}</pre>
+				<textarea class="ia-textarea" bind:value={iaResult} rows="8"></textarea>
+				<div class="ia-buttons">
+					<button class="btn btn-sm" onclick={insertarResultadoIA}>Insertar texto</button>
+					<button class="btn btn-sm btn-discard" onclick={() => { iaResult = ''; }}>Descartar</button>
+				</div>
 			</div>
 		{/if}
 
@@ -330,23 +333,11 @@
 			<div class="revision-result">
 				<div class="revision-header">
 					<span class="label">Revisión IA</span>
-					<button class="btn-link" onclick={() => revisionResult = ''}>Cerrar</button>
 				</div>
-				<div class="revision-lines">
-					{#each revisionResult.split('\n') as linea}
-						{#if linea.trim()}
-							<p class="revision-line" class:ok={linea.includes('✓')} class:warn={linea.includes('~')} class:bad={linea.includes('✗')}>
-								{#if linea.includes('✓')}
-									<span class="status-indicator">[CORRECTO]</span>
-								{:else if linea.includes('~')}
-									<span class="status-indicator">[SUGERENCIA]</span>
-								{:else if linea.includes('✗')}
-									<span class="status-indicator">[REVISAR]</span>
-								{/if}
-								{linea.replace(/[✓~✗]/g, '').trim()}
-							</p>
-						{/if}
-					{/each}
+				<textarea class="ia-textarea" bind:value={revisionResult} rows="10"></textarea>
+				<div class="ia-buttons">
+					<button class="btn btn-sm" onclick={() => navigator.clipboard.writeText(revisionResult).then(() => showToast('Copiado'))}>Copiar</button>
+					<button class="btn btn-sm btn-discard" onclick={() => revisionResult = ''}>Descartar</button>
 				</div>
 			</div>
 		{/if}
@@ -392,7 +383,17 @@
 	.borrador-list {
 		display: grid;
 		grid-template-columns: 1fr;
-		gap: 16px;
+		gap: 20px;
+	}
+	@media (min-width: 768px) {
+		.borrador-list {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+	@media (min-width: 1200px) {
+		.borrador-list {
+			grid-template-columns: repeat(3, 1fr);
+		}
 	}
 	.borrador-card {
 		display: block;
@@ -452,10 +453,10 @@
 		font-weight: 600;
 	}
 	.editor-textarea {
-		min-height: 400px;
-		padding: 20px;
-		font-size: 1.125rem;
-		line-height: 1.7;
+		min-height: 600px;
+		padding: 28px;
+		font-size: 1.15rem;
+		line-height: 1.8;
 		background: var(--bg-base);
 		border: 2px solid var(--border);
 	}
@@ -603,12 +604,35 @@
 		align-items: center;
 		margin-bottom: 8px;
 	}
-	.ia-result pre {
-		white-space: pre-wrap;
-		word-wrap: break-word;
+	.ia-textarea {
+		width: 100%;
+		min-height: 160px;
 		font-family: var(--font-serif);
 		font-size: 0.9375rem;
 		line-height: 1.6;
+		color: var(--text-primary);
+		background: var(--bg-base);
+		border: 2px solid var(--border);
+		border-radius: var(--radius-sm);
+		padding: 14px;
+		resize: vertical;
+	}
+	.ia-textarea:focus {
+		border-color: var(--accent);
+	}
+	.ia-buttons {
+		display: flex;
+		gap: 10px;
+		margin-top: 10px;
+	}
+	.btn-discard {
+		background: transparent !important;
+		color: var(--text-muted) !important;
+		border: 1px solid var(--border) !important;
+	}
+	.btn-discard:hover {
+		color: var(--error) !important;
+		border-color: var(--error) !important;
 	}
 
 	/* Revision */

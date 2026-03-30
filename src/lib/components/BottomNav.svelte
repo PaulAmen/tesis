@@ -28,55 +28,94 @@
 </script>
 
 <nav class="bottom-nav">
-	{#each items as item}
-		<a href={item.href} class="nav-item" class:active={isActive(item.href)}>
-			<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-				<path d={icons[item.icon]} />
-			</svg>
-			<span>{item.label}</span>
-		</a>
-	{/each}
+	<div class="nav-container">
+		{#each items as item}
+			<a href={item.href} class="nav-item" class:active={isActive(item.href)}>
+				<div class="icon-wrapper">
+					<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<path d={icons[item.icon]} />
+					</svg>
+				</div>
+				<span>{item.label}</span>
+			</a>
+		{/each}
+	</div>
 </nav>
 
 <style>
 	.bottom-nav {
 		position: fixed;
-		bottom: 0;
+		bottom: 24px;
 		left: 0;
 		right: 0;
 		display: flex;
-		justify-content: space-around;
-		background: rgba(18, 18, 18, 0.85);
-		backdrop-filter: blur(12px);
-		-webkit-backdrop-filter: blur(12px);
-		border-top: 1px solid var(--border);
-		padding: 8px 0 env(safe-area-inset-bottom, 12px);
-		z-index: 100;
+		justify-content: center;
+		z-index: 1000;
+		pointer-events: none;
+	}
+	.nav-container {
+		pointer-events: auto;
+		display: flex;
+		gap: 8px;
+		background: rgba(15, 15, 20, 0.75);
+		backdrop-filter: blur(20px);
+		-webkit-backdrop-filter: blur(20px);
+		border: 1px solid var(--border-bright);
+		padding: 8px;
+		border-radius: var(--radius-lg);
+		box-shadow: var(--shadow-lg), 0 0 40px rgba(0, 0, 0, 0.4);
 	}
 	.nav-item {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		justify-content: center;
 		gap: 4px;
-		padding: 8px 16px;
+		padding: 10px 16px;
 		color: var(--text-muted);
 		text-decoration: none;
-		font-size: 0.75rem;
+		font-size: 0.65rem;
 		font-family: var(--font-mono);
+		font-weight: 700;
 		text-transform: uppercase;
-		letter-spacing: 0.08em;
-		transition: color 0.2s, transform 0.1s;
+		letter-spacing: 0.1em;
+		border-radius: var(--radius-md);
+		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+		min-width: 80px;
 	}
-	.nav-item.active {
-		color: var(--accent);
+	.icon-wrapper {
+		transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 	}
 	.nav-item:hover {
 		color: var(--text-primary);
+		background: rgba(255, 255, 255, 0.05);
 	}
-	.nav-item:active {
-		transform: scale(0.92);
+	.nav-item:hover .icon-wrapper {
+		transform: translateY(-2px);
 	}
-	svg {
-		stroke-width: 2;
+	.nav-item.active {
+		color: var(--accent);
+		background: rgba(199, 210, 254, 0.1);
+		box-shadow: inset 0 0 12px rgba(199, 210, 254, 0.05);
+	}
+	.nav-item.active .icon-wrapper {
+		transform: scale(1.1);
+		filter: drop-shadow(0 0 8px var(--accent-glow));
+	}
+	@media (max-width: 480px) {
+		.bottom-nav {
+			bottom: 12px;
+		}
+		.nav-container {
+			gap: 4px;
+			padding: 6px;
+			border-radius: var(--radius-md);
+			width: 95%;
+		}
+		.nav-item {
+			padding: 8px 4px;
+			min-width: 60px;
+			font-size: 0.55rem;
+		}
 	}
 </style>

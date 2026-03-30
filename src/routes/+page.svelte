@@ -26,50 +26,50 @@
 	});
 </script>
 
-<div class="page-header" in:fade={{ duration: 300 }}>
-	<h1>Citas</h1>
+<div class="page-header" in:fade={{ duration: 400 }}>
+	<h1>Biblioteca <span class="text-accent">Académica</span></h1>
 	<a href="{base}/nueva" class="fab" title="Nueva cita">
-		<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+		<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
 			<line x1="12" y1="5" x2="12" y2="19"></line>
 			<line x1="5" y1="12" x2="19" y2="12"></line>
 		</svg>
 	</a>
 </div>
 
-<div class="search-container" in:fade={{ delay: 100, duration: 300 }}>
+<div class="search-container" in:fade={{ delay: 150, duration: 400 }}>
 	<div class="search-box">
-		<svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+		<svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
 			<circle cx="11" cy="11" r="8"></circle>
 			<line x1="21" y1="21" x2="16.65" y2="16.65"></line>
 		</svg>
-		<input type="text" placeholder="Buscar autor, tema o fragmento..." bind:value={search} />
+		<input type="text" placeholder="Buscar autores, temas o conceptos..." bind:value={search} />
 	</div>
 </div>
 
 {#if $loadingStore}
 	<div class="status-box" in:fade>
 		<div class="spinner"></div>
-		<p>Cargando tu biblioteca...</p>
+		<p>Sincronizando biblioteca...</p>
 	</div>
 {:else if filtradas.length === 0}
-	<div class="status-box empty" in:fly={{ y: 20, duration: 400 }}>
+	<div class="status-box empty" in:fly={{ y: 30, duration: 500 }}>
 		<div class="empty-icon">
-			<svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-				<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-				<path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+			<svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+				<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+				<path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
 			</svg>
 		</div>
 		<p>
-			{search ? 'No encontramos coincidencias para tu búsqueda.' : 'Tu biblioteca está vacía. Comienza agregando una cita importante.'}
+			{search ? 'No se encontraron resultados para esta búsqueda.' : 'Tu biblioteca está lista para recibir sus primeras fuentes científicas.'}
 		</p>
 	</div>
 {:else}
 	<div class="citas-grid">
 		{#each filtradas as cita, i (cita.id)}
-			<div in:fly={{ y: 20, delay: i * 50, duration: 400 }}>
+			<div in:fly={{ y: 30, delay: i * 40, duration: 500 }}>
 				<a href="{base}/citas/{cita.id}" class="cita-card">
 					<div class="cita-header">
-						<span class="cita-autor">{cita.autor} • {cita.año}</span>
+						<span class="cita-autor">{cita.autor} <span class="separator">/</span> {cita.año}</span>
 						<span class="badge" style="background: {badgeColors[cita.tipo] ?? 'var(--border)'}">{cita.tipo}</span>
 					</div>
 					<div class="cita-titulo">{cita.titulo}</div>
@@ -91,40 +91,41 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		margin-bottom: 24px;
+		margin-bottom: 32px;
 	}
 	h1 {
-		font-size: 2.5rem;
-		font-weight: 800;
-		letter-spacing: -0.03em;
-		background: linear-gradient(to bottom right, #fff, var(--text-secondary));
+		font-size: 2.2rem;
+		font-weight: 900;
+		letter-spacing: -0.04em;
+		color: #fff;
+	}
+	.text-accent {
+		color: var(--accent-dim);
+		background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dim) 100%);
 		-webkit-background-clip: text;
 		-webkit-text-fill-color: transparent;
 	}
 	.fab {
-		width: 56px;
-		height: 56px;
+		width: 60px;
+		height: 60px;
 		border-radius: var(--radius-lg);
-		background: var(--accent);
+		background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dim) 100%);
 		color: #000;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		text-decoration: none;
-		box-shadow: 0 8px 24px rgba(165, 180, 252, 0.4);
-		transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+		box-shadow: 0 10px 25px var(--accent-glow);
+		transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 	}
 	.fab:hover {
-		transform: scale(1.05) translateY(-2px);
+		transform: scale(1.1) translateY(-4px) rotate(90deg);
 		background: #fff;
-		box-shadow: 0 12px 32px rgba(165, 180, 252, 0.5);
-	}
-	.fab:active {
-		transform: scale(0.95);
+		box-shadow: 0 15px 35px var(--accent-glow);
 	}
 
 	.search-container {
-		margin-bottom: 32px;
+		margin-bottom: 40px;
 	}
 	.search-box {
 		position: relative;
@@ -133,28 +134,28 @@
 	}
 	.search-icon {
 		position: absolute;
-		left: 16px;
+		left: 20px;
 		color: var(--text-muted);
 		pointer-events: none;
 	}
 	.search-box input {
-		padding-left: 48px;
-		height: 60px;
-		font-size: 1.1rem;
-		border-color: transparent;
+		padding-left: 56px;
+		height: 64px;
+		font-size: 1.05rem;
 		background: var(--bg-surface);
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+		border: 1px solid var(--border);
+		box-shadow: var(--shadow-md);
 	}
 	.search-box input:focus {
 		border-color: var(--accent-dim);
 		background: var(--bg-elevated);
-		box-shadow: 0 0 0 4px rgba(165, 180, 252, 0.15), 0 8px 24px rgba(0, 0, 0, 0.3);
+		box-shadow: 0 0 0 5px var(--accent-glow), var(--shadow-lg);
 	}
 
 	.citas-grid {
 		display: grid;
 		grid-template-columns: 1fr;
-		gap: 20px;
+		gap: 24px;
 	}
 	@media (min-width: 768px) {
 		.citas-grid {
@@ -166,89 +167,113 @@
 			grid-template-columns: repeat(3, 1fr);
 		}
 	}
+	@media (min-width: 1600px) {
+		.citas-grid {
+			grid-template-columns: repeat(4, 1fr);
+		}
+	}
 
 	.cita-card {
 		display: flex;
 		flex-direction: column;
 		height: 100%;
 		background: var(--bg-surface);
+		backdrop-filter: blur(12px);
+		-webkit-backdrop-filter: blur(12px);
 		border: 1px solid var(--border);
-		border-radius: var(--radius-md);
-		padding: 24px;
+		border-radius: var(--radius-lg);
+		padding: 28px;
 		text-decoration: none;
 		color: inherit;
-		transition: all 0.3s ease;
+		transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 		position: relative;
 		overflow: hidden;
+		box-shadow: var(--shadow-sm);
 	}
-	.cita-card::before {
+	.cita-card::after {
 		content: '';
 		position: absolute;
-		top: 0;
-		left: 0;
-		width: 4px;
-		height: 100%;
-		background: transparent;
-		transition: background 0.3s;
+		inset: 0;
+		background: linear-gradient(135deg, transparent 0%, var(--accent-glow) 100%);
+		opacity: 0;
+		transition: opacity 0.4s;
 	}
 	.cita-card:hover {
-		border-color: var(--accent-dim);
-		background: var(--bg-elevated);
-		transform: translateY(-4px);
-		box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+		border-color: var(--border-bright);
+		background: var(--bg-hover);
+		transform: translateY(-8px) scale(1.02);
+		box-shadow: var(--shadow-lg), 0 0 30px var(--accent-glow);
 	}
-	.cita-card:hover::before {
-		background: var(--accent);
+	.cita-card:hover::after {
+		opacity: 1;
 	}
 
 	.cita-header {
 		display: flex;
 		justify-content: space-between;
 		align-items: flex-start;
-		margin-bottom: 12px;
+		margin-bottom: 16px;
+		position: relative;
+		z-index: 1;
 	}
 	.cita-autor {
 		font-family: var(--font-mono);
-		font-size: 0.9rem;
-		font-weight: 600;
+		font-size: 0.85rem;
+		font-weight: 700;
 		color: var(--accent);
-		letter-spacing: -0.01em;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+	}
+	.separator {
+		color: var(--text-muted);
+		margin: 0 4px;
 	}
 	.badge {
 		font-family: var(--font-mono);
-		font-size: 0.7rem;
+		font-size: 0.65rem;
 		padding: 4px 10px;
-		border-radius: 4px;
-		color: #000;
+		border-radius: 6px;
+		color: #fff;
 		text-transform: uppercase;
 		font-weight: 800;
-		letter-spacing: 0.05em;
+		letter-spacing: 0.1em;
+		border: 1px solid rgba(255, 255, 255, 0.1);
 	}
 	.cita-titulo {
-		font-size: 1.25rem;
-		line-height: 1.4;
-		margin-bottom: 20px;
-		font-weight: 600;
+		font-size: 1.2rem;
+		line-height: 1.5;
+		margin-bottom: 24px;
+		font-weight: 700;
 		color: var(--text-primary);
 		display: -webkit-box;
 		-webkit-line-clamp: 3;
 		-webkit-box-orient: vertical;
 		overflow: hidden;
+		position: relative;
+		z-index: 1;
 	}
 	.tags {
 		margin-top: auto;
 		display: flex;
 		flex-wrap: wrap;
-		gap: 6px;
+		gap: 8px;
+		position: relative;
+		z-index: 1;
 	}
 	.tag {
 		font-family: var(--font-mono);
-		font-size: 0.75rem;
-		padding: 2px 8px;
-		border-radius: 4px;
-		background: rgba(255, 255, 255, 0.05);
+		font-size: 0.7rem;
+		padding: 4px 10px;
+		border-radius: 6px;
+		background: rgba(255, 255, 255, 0.03);
 		color: var(--text-secondary);
 		border: 1px solid var(--border);
+		transition: all 0.2s;
+	}
+	.tag:hover {
+		background: var(--accent-glow);
+		color: var(--accent);
+		border-color: var(--accent-dim);
 	}
 
 	.status-box {
@@ -256,23 +281,28 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		padding: 80px 20px;
+		padding: 100px 20px;
 		text-align: center;
 		color: var(--text-muted);
 	}
 	.empty-icon {
-		font-size: 4rem;
-		margin-bottom: 16px;
-		opacity: 0.5;
+		margin-bottom: 24px;
+		color: var(--accent-dim);
+		opacity: 0.4;
+	}
+	.status-box p {
+		max-width: 400px;
+		font-size: 1.1rem;
+		line-height: 1.6;
 	}
 	.spinner {
-		width: 40px;
-		height: 40px;
-		border: 3px solid rgba(165, 180, 252, 0.1);
-		border-top-color: var(--accent);
+		width: 48px;
+		height: 48px;
+		border: 3px solid var(--border);
+		border-top-color: var(--accent-dim);
 		border-radius: 50%;
-		animation: spin 1s linear infinite;
-		margin-bottom: 16px;
+		animation: spin 1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+		margin-bottom: 24px;
 	}
 	@keyframes spin {
 		to { transform: rotate(360deg); }
