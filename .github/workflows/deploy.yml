@@ -33,6 +33,7 @@ jobs:
           VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
           VITE_GEMINI_API_KEY: ${{ secrets.VITE_GEMINI_API_KEY }}
           VITE_ALLOWED_EMAILS: ${{ secrets.VITE_ALLOWED_EMAILS }}
+          PUBLIC_GAS_WEB_APP_URL: ${{ secrets.PUBLIC_GAS_WEB_APP_URL }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: build
