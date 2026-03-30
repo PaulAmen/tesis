@@ -467,7 +467,7 @@
 {:else if tipoActual === 'congruencia'}
 	<!-- Custom congruencia view -->
 
-	<div class="section-group">
+	<div class="section-group group-general">
 		<div class="group-title">Datos Generales</div>
 		<div class="campos-list">
 			{@render renderCampo('tema', 'Tema', null)}
@@ -475,13 +475,13 @@
 		</div>
 	</div>
 
-	<div class="section-group">
+	<div class="section-group group-general">
 		<div class="campos-list single">
 			{@render renderCampo('objetivo_general', 'Objetivo general', null)}
 		</div>
 	</div>
 
-	<div class="section-group">
+	<div class="section-group group-metodologico">
 		<div class="group-title">
 			Objetivos Específicos
 			<div class="group-controls">
@@ -497,7 +497,7 @@
 		</div>
 	</div>
 
-	<div class="section-group">
+	<div class="section-group group-metodologico">
 		<div class="group-title">
 			Hipótesis
 			<div class="group-controls">
@@ -513,7 +513,7 @@
 		</div>
 	</div>
 
-	<div class="section-group">
+	<div class="section-group group-variables">
 		<div class="group-title">Variables</div>
 		<div class="campos-list">
 			{@render renderCampo('variable_independiente', 'Variable independiente', null)}
@@ -521,7 +521,7 @@
 		</div>
 	</div>
 
-	<div class="section-group">
+	<div class="section-group group-variables">
 		<div class="group-title">Conceptualización</div>
 		<div class="campos-list">
 			{@render renderCampo('conceptualizacion_vi', 'Conceptualización V.I.', null)}
@@ -529,7 +529,7 @@
 		</div>
 	</div>
 
-	<div class="section-group">
+	<div class="section-group group-operacional">
 		<div class="group-title">
 			Dimensiones — Variable Independiente
 			<div class="group-controls">
@@ -545,7 +545,7 @@
 		</div>
 	</div>
 
-	<div class="section-group">
+	<div class="section-group group-operacional">
 		<div class="group-title">
 			Dimensiones — Variable Dependiente
 			<div class="group-controls">
@@ -561,7 +561,7 @@
 		</div>
 	</div>
 
-	<div class="section-group">
+	<div class="section-group group-operacional">
 		<div class="group-title">
 			Indicadores — Variable Independiente
 			<div class="group-controls">
@@ -577,7 +577,7 @@
 		</div>
 	</div>
 
-	<div class="section-group">
+	<div class="section-group group-operacional">
 		<div class="group-title">
 			Indicadores — Variable Dependiente
 			<div class="group-controls">
@@ -593,7 +593,7 @@
 		</div>
 	</div>
 
-	<div class="section-group">
+	<div class="section-group group-marco">
 		<div class="group-title">Marco</div>
 		<div class="campos-list">
 			{@render renderCampo('temas_marco_teorico', 'Temas del marco teórico', null)}
@@ -703,68 +703,72 @@
 		font-weight: 700;
 	}
 
-	/* Section groups */
+	/* Section groups with subtle color differentiation */
 	.section-group {
-		margin-bottom: 28px;
+		margin-bottom: 32px;
+		padding: 24px;
+		background: rgba(255, 255, 255, 0.02);
+		border-radius: var(--radius-lg);
+		border: 1px solid var(--border);
+		position: relative;
+		overflow: hidden;
 	}
+	.section-group::before {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 0;
+		bottom: 0;
+		width: 4px;
+		background: var(--border);
+	}
+
+	/* Specific group colors - Subtle and professional */
+	.group-general { border-color: rgba(165, 180, 252, 0.2); }
+	.group-general::before { background: var(--accent); }
+	.group-general .group-title { color: var(--accent); }
+
+	.group-metodologico { border-color: rgba(134, 239, 172, 0.2); }
+	.group-metodologico::before { background: var(--success); }
+	.group-metodologico .group-title { color: var(--success); }
+
+	.group-variables { border-color: rgba(192, 132, 252, 0.2); }
+	.group-variables::before { background: #c084fc; }
+	.group-variables .group-title { color: #c084fc; }
+
+	.group-operacional { border-color: rgba(253, 224, 71, 0.2); }
+	.group-operacional::before { background: var(--warning); }
+	.group-operacional .group-title { color: var(--warning); }
+
+	.group-marco { border-color: rgba(244, 114, 182, 0.2); }
+	.group-marco::before { background: #f472b6; }
+	.group-marco .group-title { color: #f472b6; }
+
 	.group-title {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
 		font-family: var(--font-mono);
-		font-size: 0.9375rem;
-		font-weight: 700;
-		color: var(--accent);
+		font-size: 1rem;
+		font-weight: 800;
 		text-transform: uppercase;
-		letter-spacing: 0.08em;
-		padding: 10px 16px;
-		background: var(--bg-surface);
-		border: 1px solid var(--border);
-		border-radius: var(--radius-sm);
-		margin-bottom: 12px;
+		letter-spacing: 0.1em;
+		margin-bottom: 24px;
+		padding-bottom: 12px;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 	}
+	
 	.group-controls {
 		display: flex;
 		align-items: center;
-		gap: 8px;
-	}
-	.btn-count {
-		width: 32px;
-		height: 32px;
-		border-radius: 50%;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		font-size: 1.25rem;
-		font-weight: 700;
-		background: var(--bg-elevated);
-		color: var(--text-primary);
-		border: 1px solid var(--border);
-		cursor: pointer;
-		transition: all 0.2s;
-		font-family: var(--font-sans);
-	}
-	.btn-count:hover:not(:disabled) {
-		border-color: var(--accent);
-		background: var(--bg-hover);
-	}
-	.btn-count:disabled {
-		opacity: 0.3;
-		cursor: not-allowed;
-	}
-	.count-badge {
-		font-family: var(--font-mono);
-		font-size: 0.875rem;
-		color: var(--text-secondary);
-		min-width: 20px;
-		text-align: center;
+		gap: 12px;
 	}
 
 	/* Campos grid */
 	.campos-list {
 		display: grid;
 		grid-template-columns: 1fr;
-		gap: 20px;
+		gap: 24px;
 	}
 	.campos-list.single {
 		grid-template-columns: 1fr;
@@ -785,12 +789,14 @@
 		padding: 24px;
 		display: flex;
 		flex-direction: column;
-		gap: 16px;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-		transition: transform 0.2s, border-color 0.2s;
+		gap: 18px;
+		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+		transition: all 0.3s ease;
 	}
 	.campo-card:hover {
-		border-color: var(--accent-dim);
+		border-color: rgba(255, 255, 255, 0.2);
+		transform: translateY(-2px);
+		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 	}
 
 	.campo-top {
@@ -803,12 +809,12 @@
 
 	.campo-label {
 		font-family: var(--font-mono);
-		font-size: 0.875rem;
-		color: var(--accent);
+		font-size: 0.85rem;
+		color: var(--text-secondary);
 		text-transform: uppercase;
 		display: block;
 		font-weight: 700;
-		letter-spacing: 0.08em;
+		letter-spacing: 0.05em;
 	}
 
 	/* Connection */
