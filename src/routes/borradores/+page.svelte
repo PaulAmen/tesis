@@ -6,7 +6,7 @@
 		obtenerBorradoresPorSeccion, crearBorrador, actualizarBorrador, eliminarBorrador
 	} from '$lib/services/borradores';
 	import { redactarParrafo, revisarBorrador } from '$lib/services/ia';
-	import { SECCIONES_UIIX, GRUPOS_SECCIONES } from '$lib/types';
+	import { SECCIONES_UIIX, GRUPOS_SECCIONES, formatAutores } from '$lib/types';
 	import type { Borrador, SeccionUIIX, Cita } from '$lib/types';
 	import ExportarTesis from '$lib/components/ExportarTesis.svelte';
 
@@ -36,7 +36,7 @@
 		const q = citaBusqueda.toLowerCase().trim();
 		if (!q) return $citasStore;
 		return $citasStore.filter((c: Cita) =>
-			c.autor.toLowerCase().includes(q) ||
+			c.autores.some(a => a.toLowerCase().includes(q)) ||
 			c.titulo.toLowerCase().includes(q)
 		);
 	});
@@ -125,7 +125,7 @@
 	}
 
 	function insertarCita(cita: Cita) {
-		const insercion = `(${cita.autor}, ${cita.año})`;
+		const insercion = `(${formatAutores(cita.autores)}, ${cita.año})`;
 		if (textareaEl) {
 			const start = textareaEl.selectionStart;
 			const end = textareaEl.selectionEnd;
@@ -161,7 +161,7 @@
 			const citasParaIA = editorCitasUsadas
 				.map(id => getCitaById(id))
 				.filter((c): c is Cita => !!c)
-				.map(c => ({ autor: c.autor, año: c.año, cita_textual: c.cita_textual }));
+				.map(c => ({ autor: formatAutores(c.autores), año: c.año, cita_textual: c.cita_textual }));
 			const seccionNombre = SECCIONES_UIIX[seccionActual as SeccionUIIX];
 			iaResult = await redactarParrafo(seccionNombre, editorContenido, citasParaIA);
 		} catch (e: any) {
@@ -287,7 +287,7 @@
 				<div class="cita-selector-list">
 					{#each citasFiltradas as c (c.id)}
 						<button class="cita-selector-item" onclick={() => insertarCita(c)}>
-							<span class="cita-sel-autor">{c.autor} ({c.año})</span>
+							<span class="cita-sel-autor">{formatAutores(c.autores)} ({c.año})</span>
 							<span class="cita-sel-titulo">{c.titulo}</span>
 						</button>
 					{/each}
@@ -303,7 +303,7 @@
 						{@const c = getCitaById(citaId)}
 						{#if c}
 							<span class="chip">
-								{c.autor} ({c.año})
+								{formatAutores(c.autores)} ({c.año})
 								<button class="chip-remove" onclick={() => removerCitaUsada(citaId)}>&times;</button>
 							</span>
 						{/if}

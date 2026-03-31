@@ -3,6 +3,7 @@
 	import { citasStore, conexionesStore } from '$lib/stores/data';
 	import { showToast } from '$lib/stores/toast';
 	import { eliminarConexion, obtenerConexiones } from '$lib/services/conexiones';
+	import { formatAutores } from '$lib/types';
 	import type { Cita, Conexion } from '$lib/types';
 
 	let tab = $state<'temas' | 'manuales'>('temas');
@@ -67,7 +68,7 @@
 						<div class="tema-body">
 							{#each citas as cita (cita.id)}
 								<a href="{base}/citas/{cita.id}" class="tema-cita">
-									<span class="tema-cita-autor">{cita.autor} ({cita.año})</span>
+									<span class="tema-cita-autor">{formatAutores(cita.autores)} ({cita.año})</span>
 									<span class="tema-cita-titulo">{cita.titulo}</span>
 								</a>
 							{/each}
@@ -88,11 +89,11 @@
 				<div class="conexion-card">
 					<div class="conexion-pair">
 						<a href="{base}/citas/{cx.cita_origen_id}" class="conexion-cita">
-							{origen ? `${origen.autor} (${origen.año})` : '(eliminada)'}
+							{origen ? `${formatAutores(origen.autores)} (${origen.año})` : '(eliminada)'}
 						</a>
 						<span class="conexion-arrow">&rarr;</span>
 						<a href="{base}/citas/{cx.cita_destino_id}" class="conexion-cita">
-							{destino ? `${destino.autor} (${destino.año})` : '(eliminada)'}
+							{destino ? `${formatAutores(destino.autores)} (${destino.año})` : '(eliminada)'}
 						</a>
 					</div>
 					{#if cx.etiqueta}

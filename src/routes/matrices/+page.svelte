@@ -4,7 +4,7 @@
 	import { showToast } from '$lib/stores/toast';
 	import { obtenerCamposPorTipo, guardarCampo, eliminarCampo, obtenerMetaCongruencia, guardarMetaCongruencia } from '$lib/services/matrices';
 	import { completarCampoMatriz, verificarCongruencia } from '$lib/services/ia';
-	import { MATRICES } from '$lib/types';
+	import { MATRICES, formatAutores } from '$lib/types';
 	import type { TipoMatriz, Cita } from '$lib/types';
 
 	let tipoActual = $state<TipoMatriz>('congruencia');
@@ -142,7 +142,7 @@
 		const q = citaBusqueda.toLowerCase().trim();
 		if (!q) return $citasStore;
 		return $citasStore.filter((c: Cita) =>
-			c.autor.toLowerCase().includes(q) ||
+			c.autores.some(a => a.toLowerCase().includes(q)) ||
 			c.titulo.toLowerCase().includes(q)
 		);
 	});
@@ -262,7 +262,7 @@
 			const citas = (data?.citas_usadas ?? [])
 				.map(id => getCitaById(id))
 				.filter((c): c is Cita => !!c)
-				.map(c => ({ autor: c.autor, año: c.año, cita_textual: c.cita_textual }));
+				.map(c => ({ autor: formatAutores(c.autores), año: c.año, cita_textual: c.cita_textual }));
 			iaResult = await completarCampoMatriz(matrizInfo.nombre, label, data?.contenido ?? '', citas);
 		} catch (e: any) {
 			iaResult = `Error: ${e.message}`;
@@ -427,7 +427,7 @@
 					<div class="cita-selector-list">
 						{#each citasFiltradas as c (c.id)}
 							<button class="cita-selector-item" onclick={() => vincularCita(key, c.id)}>
-								<span class="cita-sel-autor">{c.autor} ({c.año})</span>
+								<span class="cita-sel-autor">{formatAutores(c.autores)} ({c.año})</span>
 								<span class="cita-sel-titulo">{c.titulo}</span>
 							</button>
 						{/each}
@@ -441,7 +441,7 @@
 						{@const c = getCitaById(citaId)}
 						{#if c}
 							<span class="chip">
-								{c.autor} ({c.año})
+								{formatAutores(c.autores)} ({c.año})
 								<button class="chip-remove" onclick={() => desvincularCita(key, citaId)}>&times;</button>
 							</span>
 						{/if}
@@ -1162,8 +1162,8 @@
 		gap: 10px;
 	}
 	.campo-check {
-		width: 18px;
-		height: 18px;
+		width: 24px;
+		height: 24px;
 		accent-color: var(--accent);
 		cursor: pointer;
 		flex-shrink: 0;
@@ -1172,19 +1172,21 @@
 	/* Selection floating bar */
 	.selection-bar {
 		position: fixed;
-		bottom: 72px;
+		bottom: 100px;
 		left: 50%;
 		transform: translateX(-50%);
 		display: flex;
 		align-items: center;
-		gap: 16px;
-		padding: 12px 24px;
-		background: var(--bg-elevated);
+		gap: 20px;
+		padding: 16px 32px;
+		background: var(--bg-surface);
+		backdrop-filter: blur(20px);
+		-webkit-backdrop-filter: blur(20px);
 		border: 1px solid var(--accent-dim);
 		border-radius: var(--radius-lg);
-		box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
-		z-index: 100;
-		max-width: calc(100vw - 32px);
+		box-shadow: var(--shadow-lg), 0 0 40px rgba(0, 0, 0, 0.6);
+		z-index: 1100;
+		max-width: calc(100vw - 40px);
 		flex-wrap: wrap;
 		justify-content: center;
 	}
@@ -1200,20 +1202,22 @@
 		gap: 8px;
 	}
 	.sel-btn {
-		padding: 8px 16px;
-		border-radius: var(--radius-sm);
-		font-size: 0.8125rem;
+		padding: 12px 24px;
+		border-radius: var(--radius-md);
+		font-size: 0.9rem;
 		font-family: var(--font-mono);
-		font-weight: 600;
+		font-weight: 800;
 		background: var(--accent);
 		color: #000;
 		border: none;
 		cursor: pointer;
-		transition: transform 0.1s, opacity 0.2s;
+		transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 		white-space: nowrap;
 	}
 	.sel-btn:hover {
-		opacity: 0.9;
+		transform: translateY(-2px);
+		filter: brightness(1.1);
+		box-shadow: 0 4px 12px var(--accent-glow);
 	}
 	.sel-btn:active {
 		transform: scale(0.96);

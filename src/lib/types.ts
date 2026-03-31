@@ -2,7 +2,7 @@ export type TipoCita = 'libro' | 'articulo' | 'reporte' | 'tesis' | 'web';
 
 export interface Cita {
 	id: string;
-	autor: string;
+	autores: string[];
 	año: number;
 	titulo: string;
 	fuente: string;
@@ -155,6 +155,19 @@ export interface ExportError {
 }
 
 export type ExportResponse = ExportResult | ExportError;
+
+export function formatAutores(autores: string[]): string {
+	if (!autores || autores.length === 0) return '';
+	if (autores.length === 1) return autores[0];
+	if (autores.length === 2) return `${autores[0]} & ${autores[1]}`;
+	return autores.slice(0, -1).join(', ') + ' & ' + autores[autores.length - 1];
+}
+
+export function formatAutoresCorto(autores: string[]): string {
+	if (!autores || autores.length === 0) return '';
+	if (autores.length <= 2) return formatAutores(autores);
+	return `${autores[0]} et al.`;
+}
 
 // ---------------------------------------------------------------
 

@@ -2,6 +2,7 @@
 	import { citasStore, loadingStore } from '$lib/stores/data';
 	import { base } from '$app/paths';
 	import type { Cita } from '$lib/types';
+	import { formatAutores } from '$lib/types';
 	import { fade, fly } from 'svelte/transition';
 
 	let search = $state('');
@@ -18,7 +19,7 @@
 		const q = search.toLowerCase().trim();
 		if (!q) return $citasStore;
 		return $citasStore.filter((c: Cita) =>
-			c.autor.toLowerCase().includes(q) ||
+			c.autores.some(a => a.toLowerCase().includes(q)) ||
 			c.titulo.toLowerCase().includes(q) ||
 			c.temas.some(t => t.toLowerCase().includes(q)) ||
 			c.cita_textual.toLowerCase().includes(q)
@@ -69,7 +70,7 @@
 			<div in:fly={{ y: 30, delay: i * 40, duration: 500 }}>
 				<a href="{base}/citas/{cita.id}" class="cita-card">
 					<div class="cita-header">
-						<span class="cita-autor">{cita.autor} <span class="separator">/</span> {cita.año}</span>
+						<span class="cita-autor">{formatAutores(cita.autores)} <span class="separator">/</span> {cita.año}</span>
 						<span class="badge" style="background: {badgeColors[cita.tipo] ?? 'var(--border)'}">{cita.tipo}</span>
 					</div>
 					<div class="cita-titulo">{cita.titulo}</div>

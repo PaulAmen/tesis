@@ -2,6 +2,7 @@
 	import { citasStore } from '$lib/stores/data';
 	import { showToast } from '$lib/stores/toast';
 	import { mapaTematicoGlobal, lagunasAnalisis, estructuraCap2 } from '$lib/services/ia';
+	import { formatAutores } from '$lib/types';
 	import type { Cita } from '$lib/types';
 	import { fade, fly, slide } from 'svelte/transition';
 
@@ -20,7 +21,7 @@
 		result = '';
 		try {
 			const citas = $citasStore.map((c: Cita) => ({
-				autor: c.autor,
+				autor: formatAutores(c.autores),
 				año: c.año,
 				titulo: c.titulo,
 				temas: c.temas

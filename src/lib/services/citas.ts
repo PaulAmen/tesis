@@ -10,9 +10,10 @@ const COL = 'citas';
 
 function docToCita(d: any): Cita {
 	const data = d.data();
+	const autores = data.autores ?? (data.autor ? [data.autor] : []);
 	return {
 		id: d.id,
-		autor: data.autor ?? '',
+		autores,
 		año: data.año ?? 0,
 		titulo: data.titulo ?? '',
 		fuente: data.fuente ?? '',
@@ -47,7 +48,7 @@ export async function actualizarCita(id: string, data: Partial<Cita>): Promise<v
 	const updateData: any = { ...data };
 	delete updateData.id;
 	delete updateData.creado_en;
-	if (data.autor || data.año || data.titulo || data.fuente || data.paginas || data.tipo) {
+	if (data.autores || data.año || data.titulo || data.fuente || data.paginas || data.tipo) {
 		updateData.referencia_apa = generarReferenciaAPA(data as any);
 	}
 	await updateDoc(ref, updateData);

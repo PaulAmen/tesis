@@ -6,7 +6,7 @@
 	import { showToast } from '$lib/stores/toast';
 	import type { TipoCita } from '$lib/types';
 
-	let autor = $state('');
+	let autores = $state<string[]>(['']);
 	let año = $state(new Date().getFullYear());
 	let titulo = $state('');
 	let fuente = $state('');
@@ -17,17 +17,24 @@
 	let notas = $state('');
 	let guardando = $state(false);
 
+	function addAutor() { autores = [...autores, '']; }
+	function removeAutor(i: number) {
+		if (autores.length <= 1) return;
+		autores = autores.filter((_, idx) => idx !== i);
+	}
+
 	async function handleSubmit(e: Event) {
 		e.preventDefault();
-		if (!autor.trim() || !titulo.trim()) {
-			showToast('Autor y título son obligatorios', 'error');
+		const autoresLimpios = autores.map(a => a.trim()).filter(Boolean);
+		if (autoresLimpios.length === 0 || !titulo.trim()) {
+			showToast('Al menos un autor y título son obligatorios', 'error');
 			return;
 		}
 		guardando = true;
 		try {
 			const temas = temasInput.split(',').map(t => t.trim()).filter(Boolean);
 			await crearCita({
-				autor: autor.trim(),
+				autores: autoresLimpios,
 				año,
 				titulo: titulo.trim(),
 				fuente: fuente.trim(),
@@ -66,8 +73,16 @@
 	</div>
 
 	<div class="field">
-		<label for="autor">Autor *</label>
-		<input id="autor" type="text" placeholder="Apellido, N." bind:value={autor} required />
+		<label>Autores *</label>
+		{#each autores as _, i}
+			<div class="autor-row">
+				<input type="text" placeholder="Apellido, N." bind:value={autores[i]} required />
+				{#if autores.length > 1}
+					<button type="button" class="btn-autor-remove" onclick={() => removeAutor(i)}>&times;</button>
+				{/if}
+			</div>
+		{/each}
+		<button type="button" class="btn-autor-add" onclick={addAutor}>+ Agregar autor</button>
 	</div>
 
 	<div class="field">
@@ -143,6 +158,46 @@
 		font-size: 0.75rem;
 		color: var(--text-muted);
 		text-transform: uppercase;
+	}
+	.autor-row {
+		display: flex;
+		gap: 8px;
+		align-items: center;
+	}
+	.autor-row input {
+		flex: 1;
+	}
+	.btn-autor-remove {
+		width: 32px;
+		height: 32px;
+		border-radius: 50%;
+		background: transparent;
+		border: 1px solid var(--border);
+		color: var(--error);
+		font-size: 1.25rem;
+		cursor: pointer;
+		flex-shrink: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	.btn-autor-remove:hover {
+		border-color: var(--error);
+	}
+	.btn-autor-add {
+		font-family: var(--font-mono);
+		font-size: 0.8125rem;
+		color: var(--accent);
+		background: none;
+		border: 1px dashed var(--border);
+		border-radius: var(--radius-sm);
+		padding: 8px;
+		cursor: pointer;
+		width: 100%;
+		margin-top: 4px;
+	}
+	.btn-autor-add:hover {
+		border-color: var(--accent);
 	}
 	.btn-primary {
 		padding: 12px;
