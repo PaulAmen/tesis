@@ -208,7 +208,7 @@
 				</div>
 
 				<div class="edit-field">
-					<label>Autores</label>
+					<span class="edit-label">Autores</span>
 					{#each editAutores as _, i}
 						<div class="autor-row">
 							<input type="text" placeholder="Apellido, N." bind:value={editAutores[i]} />
@@ -563,7 +563,7 @@
 		flex-direction: column;
 		gap: 6px;
 	}
-	.edit-field label {
+	.edit-field label, .edit-label {
 		font-family: var(--font-mono);
 		font-size: 0.75rem;
 		color: var(--text-muted);

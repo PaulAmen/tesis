@@ -653,46 +653,6 @@
 		align-items: center;
 		margin-bottom: 12px;
 	}
-	.revision-lines {
-		display: flex;
-		flex-direction: column;
-		gap: 8px;
-	}
-	.revision-line {
-		font-family: var(--font-mono);
-		font-size: 0.875rem;
-		line-height: 1.5;
-		padding: 12px 16px;
-		border-radius: var(--radius-sm);
-		background: var(--bg-elevated);
-		border-left: 4px solid var(--border);
-		display: flex;
-		flex-direction: column;
-		gap: 4px;
-	}
-	.status-indicator {
-		font-weight: 800;
-		font-size: 0.7rem;
-		letter-spacing: 0.05em;
-	}
-	.revision-line.ok {
-		border-left-color: var(--success);
-	}
-	.revision-line.ok .status-indicator {
-		color: var(--success);
-	}
-	.revision-line.warn {
-		border-left-color: var(--warning);
-	}
-	.revision-line.warn .status-indicator {
-		color: var(--warning);
-	}
-	.revision-line.bad {
-		border-left-color: var(--error);
-	}
-	.revision-line.bad .status-indicator {
-		color: var(--error);
-	}
 
 	.loading, .empty {
 		text-align: center;

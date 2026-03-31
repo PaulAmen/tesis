@@ -73,7 +73,7 @@
 	</div>
 
 	<div class="field">
-		<label>Autores *</label>
+		<span class="label-span">Autores *</span>
 		{#each autores as _, i}
 			<div class="autor-row">
 				<input type="text" placeholder="Apellido, N." bind:value={autores[i]} required />
@@ -153,7 +153,7 @@
 		flex-direction: column;
 		gap: 4px;
 	}
-	label {
+	label, .label-span {
 		font-family: var(--font-mono);
 		font-size: 0.75rem;
 		color: var(--text-muted);
