@@ -2,8 +2,7 @@ import {
 	REGLAS_APA7,
 	REGLAS_REDACCION_UIIX,
 	REGLAS_POR_SECCION,
-	resumenContexto,
-	contextoCompleto
+	resumenContexto
 } from '$lib/contexto-academico';
 
 const SYSTEM_PROMPT = `Eres un asistente académico experto en escritura de tesis doctorales en español bajo estructura UIIX. Sé conciso y académico.
@@ -225,12 +224,12 @@ export async function verificarCongruencia(campos: Record<string, string>): Prom
 		.map(([label, valor]) => `${label}: ${valor || '(vacío)'}`)
 		.join('\n');
 	return llamarGemini(
-		`${contextoCompleto()}
+		`Analiza la congruencia interna de los siguientes elementos de una tesis doctoral. Todos los datos fueron ingresados por el usuario — evalúa únicamente la coherencia entre ellos, sin asumir información externa.
 
-DATOS INGRESADOS POR EL USUARIO:
+Si el usuario incluye un marco metodológico, úsalo para determinar si los indicadores son medibles con el instrumento y enfoque descritos.
+
+ELEMENTOS DE LA TESIS:
 ${lineas}
-
-Compara los datos ingresados con el contexto de referencia y analiza la congruencia interna.
 
 Responde exactamente en este formato:
 
@@ -238,6 +237,7 @@ OBJETIVOS → HIPÓTESIS: [✓ Alineados / ✗ Desalineados] — [observación]
 HIPÓTESIS → VARIABLES: [✓ Coherente / ✗ Incoherente] — [observación]
 VARIABLES → DIMENSIONES: [✓ Bien desagregadas / ✗ Problema] — [observación]
 DIMENSIONES → INDICADORES: [✓ Medibles / ✗ No medibles] — [observación]
+INDICADORES → METODOLOGÍA: [✓ Coherente / ✗ Incoherente] — [observación sobre si el instrumento y enfoque permiten medir los indicadores]
 CONGRUENCIA GLOBAL: [✓ Alta / ~ Media / ✗ Baja]
 RECOMENDACIÓN PRINCIPAL: [Una acción concreta para fortalecer la congruencia]`
 	);

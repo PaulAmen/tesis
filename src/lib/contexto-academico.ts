@@ -162,9 +162,9 @@ Nivel doctoral: Cada recomendación debe derivarse de una conclusión específic
 };
 
 export const CONTEXTO_TESIS = {
-	tema: 'Modelo didáctico basado en un syllabus interactivo para mejorar el desempeño académico en la asignatura de Informática Aplicada a la Educación en la Universidad Estatal del Sur de Manabí (UNESUM)',
+	tema: 'Modelo Didáctico basado en un syllabus interactivo para favorecer el Desempeño Académico del Estudiante en Informática Aplicada a la Educación en la Universidad Estatal del Sur de Manabí, periodo 2023-2026.',
 	pregunta_investigacion: '¿De qué manera un modelo didáctico basado en un syllabus interactivo favorece el desempeño académico de los estudiantes en la asignatura de Informática Aplicada a la Educación?',
-	objetivo_general: 'Desarrollar un modelo didáctico basado en un syllabus interactivo para favorecer el desempeño académico de los estudiantes en la asignatura de Informática Aplicada a la Educación en la UNESUM.',
+	objetivo_general: 'Proponer un modelo didáctico basado en un syllabus interactivo valorado favorablemente por los estudiantes respecto al desempeño académico en la asignatura de Informática Aplicada a la Educación de la Universidad Estatal del Sur de Manabí, Ecuador.',
 	objetivos_especificos: [
 		'Caracterizar el estado actual del proceso de enseñanza-aprendizaje en la asignatura de Informática Aplicada a la Educación en la Universidad Estatal del Sur de Manabí.',
 		'Fundamentar teóricamente el desarrollo de un syllabus interactivo como estrategia didáctica para mejorar el desempeño académico de los estudiantes.',
@@ -184,6 +184,14 @@ export const CONTEXTO_TESIS = {
 				'Diseño Instruccional y Estrategias Didácticas',
 				'Interactividad, Multimedia y Evaluación Formativa',
 				'Usabilidad y Accesibilidad Tecnológica'
+			],
+			indicadores: [
+				{ texto: 'Grado de coherencia percibida entre los objetivos de aprendizaje, los contenidos y las actividades de evaluación.', dimension: 0 },
+				{ texto: 'Nivel de claridad percibida en la organización y secuenciación de los contenidos.', dimension: 0 },
+				{ texto: 'Grado de utilidad percibida de los cuestionarios de autoevaluación interactivos para el aprendizaje.', dimension: 1 },
+				{ texto: 'Nivel de contribución percibida de las actividades participativas al aprendizaje activo.', dimension: 1 },
+				{ texto: 'Grado de claridad y accesibilidad percibida de las rúbricas de evaluación.', dimension: 1 },
+				{ texto: 'Nivel de facilidad percibida en la navegación e interacción con la interfaz del syllabus interactivo.', dimension: 2 }
 			]
 		},
 		dependiente: {
@@ -193,8 +201,20 @@ export const CONTEXTO_TESIS = {
 				'Claridad Pedagógica',
 				'Compromiso y Motivación',
 				'Autonomía y Autoeficacia'
+			],
+			indicadores: [
+				{ texto: 'Nivel de claridad percibida de los objetivos de aprendizaje.', dimension: 0 },
+				{ texto: 'Nivel de interés generado por el formato interactivo.', dimension: 1 },
+				{ texto: 'Nivel de confianza percibida para completar las tareas (autoeficacia).', dimension: 2 }
 			]
 		}
+	},
+	metodologia: {
+		enfoque: 'Cuantitativo',
+		tipo: 'Proyectiva (propuesta de modelo)',
+		diseño: 'No experimental, transversal',
+		validacion: 'Prueba de simulación con estudiantes. Los indicadores miden percepciones estudiantiles mediante un cuestionario con escala Likert de 5 puntos (1=Totalmente en desacuerdo a 5=Totalmente de acuerdo). Los indicadores de percepción son medibles a través de esta escala y se analizan estadísticamente (media, desviación estándar, prueba t o Wilcoxon según normalidad). Este diseño es coherente con investigaciones proyectivas donde se valora la propuesta antes de su implementación completa.',
+		instrumento: 'Cuestionario estructurado con ítems tipo Likert, validado por juicio de expertos y confiabilidad por Alfa de Cronbach.'
 	},
 	universidad: 'Universidad Estatal del Sur de Manabí (UNESUM)',
 	estructura: 'UIIX (Introducción, Cap. 1 Proyección, Cap. 2 Fundamentos Teóricos, Cap. 3 Metodología, Cap. 4 Propuesta de Transformación, Conclusiones, Recomendaciones)'
@@ -214,6 +234,12 @@ Estructura: ${c.estructura}`;
 // Helper para contexto completo (para verificación de congruencia)
 export function contextoCompleto(): string {
 	const c = CONTEXTO_TESIS;
+	const indVI = c.variables.independiente.indicadores
+		.map((ind, i) => `  Ind.VI.${i + 1}: ${ind.texto} (→ ${c.variables.independiente.dimensiones[ind.dimension]})`)
+		.join('\n');
+	const indVD = c.variables.dependiente.indicadores
+		.map((ind, i) => `  Ind.VD.${i + 1}: ${ind.texto} (→ ${c.variables.dependiente.dimensiones[ind.dimension]})`)
+		.join('\n');
 	return `CONTEXTO COMPLETO DE LA TESIS:
 Tema: ${c.tema}
 Pregunta: ${c.pregunta_investigacion}
@@ -227,7 +253,14 @@ Hipótesis nula: ${c.hipotesis.nula}
 Hipótesis alternativa: ${c.hipotesis.alternativa}
 V.I.: ${c.variables.independiente.nombre} — ${c.variables.independiente.conceptualizacion}
   Dimensiones VI: ${c.variables.independiente.dimensiones.join('; ')}
+  Indicadores VI:
+${indVI}
 V.D.: ${c.variables.dependiente.nombre} — ${c.variables.dependiente.conceptualizacion}
   Dimensiones VD: ${c.variables.dependiente.dimensiones.join('; ')}
+  Indicadores VD:
+${indVD}
+Metodología: ${c.metodologia.enfoque}, ${c.metodologia.tipo}, ${c.metodologia.diseño}
+Validación: ${c.metodologia.validacion}
+Instrumento: ${c.metodologia.instrumento}
 Universidad: ${c.universidad}`;
 }

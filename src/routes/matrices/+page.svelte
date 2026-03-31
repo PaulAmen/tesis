@@ -29,7 +29,7 @@
 	let metaCounts = $state<Record<string, number>>({
 		oe: 4, hipotesis: 3,
 		dimension_vi: 3, dimension_vd: 3,
-		indicador_vi: 3, indicador_vd: 3,
+		indicador_vi: 6, indicador_vd: 3,
 		tema_mt: 3
 	});
 	let conexiones = $state<Record<string, string>>({});
@@ -336,7 +336,7 @@
 	async function handleVerificarCongruencia() {
 		const allKeys = allCongruenciaKeys();
 		const vacios = allKeys
-			.filter(({ key }) => !['tema', 'pregunta_investigacion', 'marco_metodologico'].includes(key) && !key.startsWith('tema_mt_'))
+			.filter(({ key }) => !['tema', 'pregunta_investigacion'].includes(key) && !key.startsWith('tema_mt_'))
 			.filter(({ key }) => !campos[key]?.contenido?.trim());
 		congruenciaWarnings = vacios.map(({ label }) => label);
 
@@ -345,7 +345,7 @@
 		try {
 			const data: Record<string, string> = {};
 			for (const { key, label } of allKeys) {
-				if (!['tema', 'pregunta_investigacion', 'marco_metodologico'].includes(key) && !key.startsWith('tema_mt_')) {
+				if (!['tema', 'pregunta_investigacion'].includes(key) && !key.startsWith('tema_mt_')) {
 					data[label] = campos[key]?.contenido ?? '';
 				}
 			}
