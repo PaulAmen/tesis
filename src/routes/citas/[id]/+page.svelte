@@ -741,7 +741,7 @@
 	}
 	.btn-outline.active {
 		background: var(--accent);
-		color: #000;
+		color: #121212;
 	}
 	.btn-ghost {
 		background: transparent;

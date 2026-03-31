@@ -98,31 +98,28 @@
 		font-size: 2.2rem;
 		font-weight: 900;
 		letter-spacing: -0.04em;
-		color: #fff;
+		color: var(--text-primary);
 	}
 	.text-accent {
-		color: var(--accent-dim);
-		background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dim) 100%);
-		-webkit-background-clip: text;
-		-webkit-text-fill-color: transparent;
+		color: var(--accent);
 	}
 	.fab {
 		width: 60px;
 		height: 60px;
 		border-radius: var(--radius-lg);
-		background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dim) 100%);
-		color: #000;
+		background: var(--accent);
+		color: #121212;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		text-decoration: none;
-		box-shadow: 0 10px 25px var(--accent-glow);
+		box-shadow: var(--shadow-md);
 		transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 	}
 	.fab:hover {
 		transform: scale(1.1) translateY(-4px) rotate(90deg);
 		background: #fff;
-		box-shadow: 0 15px 35px var(--accent-glow);
+		box-shadow: var(--shadow-lg);
 	}
 
 	.search-container {
@@ -145,12 +142,12 @@
 		font-size: 1.05rem;
 		background: var(--bg-surface);
 		border: 1px solid var(--border);
-		box-shadow: var(--shadow-md);
+		box-shadow: var(--shadow-sm);
 	}
 	.search-box input:focus {
 		border-color: var(--accent-dim);
 		background: var(--bg-elevated);
-		box-shadow: 0 0 0 5px var(--accent-glow), var(--shadow-lg);
+		box-shadow: 0 0 0 4px var(--accent-glow), var(--shadow-md);
 	}
 
 	.citas-grid {
@@ -179,8 +176,6 @@
 		flex-direction: column;
 		height: 100%;
 		background: var(--bg-surface);
-		backdrop-filter: blur(12px);
-		-webkit-backdrop-filter: blur(12px);
 		border: 1px solid var(--border);
 		border-radius: var(--radius-lg);
 		padding: 28px;
@@ -191,22 +186,11 @@
 		overflow: hidden;
 		box-shadow: var(--shadow-sm);
 	}
-	.cita-card::after {
-		content: '';
-		position: absolute;
-		inset: 0;
-		background: linear-gradient(135deg, transparent 0%, var(--accent-glow) 100%);
-		opacity: 0;
-		transition: opacity 0.4s;
-	}
 	.cita-card:hover {
 		border-color: var(--border-bright);
 		background: var(--bg-hover);
-		transform: translateY(-8px) scale(1.02);
-		box-shadow: var(--shadow-lg), 0 0 30px var(--accent-glow);
-	}
-	.cita-card:hover::after {
-		opacity: 1;
+		transform: translateY(-8px);
+		box-shadow: var(--shadow-md);
 	}
 
 	.cita-header {

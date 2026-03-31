@@ -57,13 +57,11 @@
 		pointer-events: auto;
 		display: flex;
 		gap: 8px;
-		background: rgba(15, 15, 20, 0.75);
-		backdrop-filter: blur(20px);
-		-webkit-backdrop-filter: blur(20px);
+		background: var(--bg-elevated);
 		border: 1px solid var(--border-bright);
 		padding: 8px;
 		border-radius: var(--radius-lg);
-		box-shadow: var(--shadow-lg), 0 0 40px rgba(0, 0, 0, 0.4);
+		box-shadow: var(--shadow-lg);
 	}
 	.nav-item {
 		display: flex;
@@ -88,15 +86,15 @@
 	}
 	.nav-item:hover {
 		color: var(--text-primary);
-		background: rgba(255, 255, 255, 0.05);
+		background: var(--bg-hover);
 	}
 	.nav-item:hover .icon-wrapper {
 		transform: translateY(-2px);
 	}
 	.nav-item.active {
 		color: var(--accent);
-		background: rgba(199, 210, 254, 0.1);
-		box-shadow: inset 0 0 12px rgba(199, 210, 254, 0.05);
+		background: rgba(152, 195, 121, 0.08);
+		box-shadow: inset 0 0 12px rgba(152, 195, 121, 0.05);
 	}
 	.nav-item.active .icon-wrapper {
 		transform: scale(1.1);

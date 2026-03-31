@@ -205,7 +205,7 @@
 		font-size: 1rem;
 		font-weight: 600;
 		background: var(--accent);
-		color: var(--bg-base);
+		color: #121212;
 		border: none;
 		cursor: pointer;
 		font-family: var(--font-sans);

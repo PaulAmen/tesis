@@ -136,7 +136,7 @@
 	}
 	.tab.active {
 		background: var(--accent);
-		color: var(--bg-base);
+		color: #121212;
 	}
 
 	/* Temas */

@@ -406,11 +406,11 @@
 		cursor: pointer;
 		transition: all 0.2s;
 		color: inherit;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+		box-shadow: var(--shadow-sm);
 	}
 	.borrador-card:hover {
 		border-color: var(--accent);
-		background: var(--bg-elevated);
+		background: var(--bg-hover);
 		transform: translateY(-2px);
 	}
 	.borrador-title {
@@ -432,7 +432,7 @@
 		padding: 24px;
 		border-radius: var(--radius-lg);
 		border: 1px solid var(--border);
-		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+		box-shadow: var(--shadow-lg);
 	}
 	.editor-header {
 		display: flex;
@@ -458,7 +458,7 @@
 		font-size: 1.15rem;
 		line-height: 1.8;
 		background: var(--bg-base);
-		border: 2px solid var(--border);
+		border: 1px solid var(--border);
 	}
 	.editor-actions {
 		display: flex;
@@ -473,7 +473,7 @@
 		font-size: 1rem;
 		font-weight: 600;
 		background: var(--accent);
-		color: #000;
+		color: #121212;
 		border: none;
 		cursor: pointer;
 		font-family: var(--font-sans);
@@ -486,10 +486,10 @@
 	.btn-outline {
 		background: transparent;
 		color: var(--accent);
-		border: 2px solid var(--accent-dim);
+		border: 1px solid var(--accent-dim);
 	}
 	.btn-outline:hover {
-		background: rgba(165, 180, 252, 0.1);
+		background: var(--accent-glow);
 	}
 	.btn-link {
 		font-family: var(--font-mono);

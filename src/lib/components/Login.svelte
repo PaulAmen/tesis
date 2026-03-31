@@ -63,8 +63,7 @@
 		align-items: center;
 		justify-content: center;
 		padding: 24px;
-		background-image: 
-			radial-gradient(circle at 50% 50%, rgba(129, 140, 248, 0.1) 0%, transparent 70%);
+		background: var(--bg-base);
 	}
 	.login-card {
 		width: 100%;
@@ -72,11 +71,9 @@
 		text-align: center;
 		padding: 56px 40px;
 		background: var(--bg-surface);
-		backdrop-filter: blur(24px);
-		-webkit-backdrop-filter: blur(24px);
 		border: 1px solid var(--border-bright);
 		border-radius: var(--radius-lg);
-		box-shadow: var(--shadow-lg), 0 0 60px rgba(0, 0, 0, 0.5);
+		box-shadow: var(--shadow-lg);
 		animation: cardEntry 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 	}
 	@keyframes cardEntry {
@@ -91,9 +88,7 @@
 		font-weight: 900;
 		margin-bottom: 12px;
 		letter-spacing: -0.05em;
-		background: linear-gradient(135deg, #fff 0%, var(--accent-dim) 100%);
-		-webkit-background-clip: text;
-		-webkit-text-fill-color: transparent;
+		color: var(--text-primary);
 	}
 	.subtitle {
 		color: var(--text-secondary);

@@ -61,46 +61,43 @@
 	}
 
 	:global(:root) {
-		--bg-base: #0a0a0c;
-		--bg-surface: rgba(20, 20, 25, 0.7);
-		--bg-elevated: rgba(30, 30, 40, 0.8);
-		--bg-hover: rgba(45, 45, 55, 0.9);
-		--border: rgba(255, 255, 255, 0.08);
-		--border-bright: rgba(255, 255, 255, 0.15);
-		--text-primary: #f0f0f5;
-		--text-secondary: #a0a0b0;
-		--text-muted: #666675;
-		--accent: #c7d2fe;
-		--accent-dim: #818cf8;
-		--accent-glow: rgba(129, 140, 248, 0.2);
-		--success: #34d399;
-		--error: #fb7185;
-		--warning: #fbbf24;
+		--bg-base: #121212;
+		--bg-surface: #1e1e1e;
+		--bg-elevated: #282a36;
+		--bg-hover: #323444;
+		--border: rgba(255, 255, 255, 0.05);
+		--border-bright: rgba(255, 255, 255, 0.1);
+		--text-primary: #e0e0e0;
+		--text-secondary: #d4d4d4;
+		--text-muted: #808080;
+		--accent: #98c379;
+		--accent-dim: #6a9955;
+		--accent-glow: rgba(106, 153, 85, 0.15);
+		--success: #98c379;
+		--error: #e06c75;
+		--warning: #e5c07b;
 
 		--font-serif: 'Lora', 'Georgia', serif;
 		--font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 		--font-sans: 'Inter', -apple-system, sans-serif;
 
-		--badge-libro: rgba(147, 197, 253, 0.2);
-		--badge-articulo: rgba(253, 186, 116, 0.2);
-		--badge-reporte: rgba(192, 132, 252, 0.2);
-		--badge-tesis: rgba(94, 234, 212, 0.2);
-		--badge-web: rgba(244, 114, 182, 0.2);
+		--badge-libro: rgba(97, 175, 239, 0.15);
+		--badge-articulo: rgba(229, 192, 123, 0.15);
+		--badge-reporte: rgba(198, 120, 221, 0.15);
+		--badge-tesis: rgba(86, 182, 194, 0.15);
+		--badge-web: rgba(224, 108, 117, 0.15);
 
 		--radius-sm: 8px;
 		--radius-md: 14px;
 		--radius-lg: 24px;
 		
-		--shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
-		--shadow-md: 0 8px 24px rgba(0, 0, 0, 0.3);
-		--shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.4);
+		--shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.4);
+		--shadow-md: 0 8px 24px rgba(0, 0, 0, 0.5);
+		--shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.6);
 	}
 
 	:global(html, body) {
 		background: var(--bg-base);
-		background-image: 
-			radial-gradient(circle at 0% 0%, rgba(129, 140, 248, 0.05) 0%, transparent 50%),
-			radial-gradient(circle at 100% 100%, rgba(192, 132, 252, 0.05) 0%, transparent 50%);
 		color: var(--text-primary);
 		font-family: var(--font-sans);
 		font-size: 20px;

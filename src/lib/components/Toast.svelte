@@ -31,19 +31,19 @@
 		animation: slideIn 0.3s ease;
 	}
 	.toast-success {
-		background: #1a3a2a;
-		color: #6ee7a0;
-		border: 1px solid #2d5a3d;
+		background: var(--bg-surface);
+		color: var(--success);
+		border: 1px solid var(--success);
 	}
 	.toast-error {
-		background: #3a1a1a;
-		color: #e76e6e;
-		border: 1px solid #5a2d2d;
+		background: var(--bg-surface);
+		color: var(--error);
+		border: 1px solid var(--error);
 	}
 	.toast-info {
-		background: #1a2a3a;
-		color: #6eb0e7;
-		border: 1px solid #2d3d5a;
+		background: var(--bg-surface);
+		color: var(--accent);
+		border: 1px solid var(--accent);
 	}
 	@keyframes slideIn {
 		from { opacity: 0; transform: translateY(-10px); }

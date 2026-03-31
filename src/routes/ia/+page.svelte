@@ -104,9 +104,7 @@
 		font-weight: 900;
 		margin-bottom: 8px;
 		letter-spacing: -0.05em;
-		background: linear-gradient(135deg, #fff 0%, var(--accent-dim) 100%);
-		-webkit-background-clip: text;
-		-webkit-text-fill-color: transparent;
+		color: var(--text-primary);
 	}
 	.subtitle {
 		font-family: var(--font-mono);
@@ -133,8 +131,6 @@
 		gap: 24px;
 		padding: 32px;
 		background: var(--bg-surface);
-		backdrop-filter: blur(16px);
-		-webkit-backdrop-filter: blur(16px);
 		border: 1px solid var(--border);
 		border-radius: var(--radius-lg);
 		cursor: pointer;
@@ -148,12 +144,12 @@
 		border-color: var(--border-bright);
 		background: var(--bg-hover);
 		transform: translateY(-8px);
-		box-shadow: var(--shadow-lg), 0 0 30px var(--accent-glow);
+		box-shadow: var(--shadow-lg);
 	}
 	.consulta-card.active {
 		border-color: var(--accent-dim);
-		background: var(--accent-glow);
-		box-shadow: 0 0 0 4px var(--accent-glow), var(--shadow-md);
+		background: var(--bg-elevated);
+		box-shadow: 0 0 0 2px var(--accent-dim), var(--shadow-md);
 	}
 	.consulta-icon {
 		background: var(--bg-elevated);
@@ -170,13 +166,13 @@
 	.consulta-card:hover .consulta-icon {
 		transform: scale(1.1) rotate(5deg);
 		background: var(--bg-hover);
-		color: #fff;
+		color: var(--text-primary);
 	}
 	.consulta-title {
 		font-weight: 800;
 		font-size: 1.3rem;
 		margin-bottom: 10px;
-		color: #fff;
+		color: var(--text-primary);
 	}
 	.consulta-desc {
 		font-size: 0.95rem;
@@ -186,12 +182,10 @@
 
 	.result-box {
 		background: var(--bg-surface);
-		backdrop-filter: blur(24px);
-		-webkit-backdrop-filter: blur(24px);
 		border: 1px solid var(--border-bright);
 		border-radius: var(--radius-lg);
 		padding: 40px;
-		box-shadow: var(--shadow-lg), 0 0 60px rgba(0, 0, 0, 0.4);
+		box-shadow: var(--shadow-lg);
 		position: relative;
 	}
 	.result-header {

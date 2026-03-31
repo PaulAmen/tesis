@@ -742,30 +742,30 @@
 		background: var(--border);
 	}
 
-	/* Specific group colors - Subtle and professional */
-	.group-general { border-color: rgba(165, 180, 252, 0.2); }
+	/* Specific group colors - Subtle and professional pastel/desaturated */
+	.group-general { border-color: rgba(152, 195, 121, 0.2); }
 	.group-general::before { background: var(--accent); }
 	.group-general .group-title { color: var(--accent); }
 
-	.group-metodologico { border-color: rgba(134, 239, 172, 0.2); }
-	.group-metodologico::before { background: var(--success); }
-	.group-metodologico .group-title { color: var(--success); }
+	.group-metodologico { border-color: rgba(97, 175, 239, 0.2); }
+	.group-metodologico::before { background: #61afef; }
+	.group-metodologico .group-title { color: #61afef; }
 
-	.group-variables { border-color: rgba(192, 132, 252, 0.2); }
-	.group-variables::before { background: #c084fc; }
-	.group-variables .group-title { color: #c084fc; }
+	.group-variables { border-color: rgba(198, 120, 221, 0.2); }
+	.group-variables::before { background: #c678dd; }
+	.group-variables .group-title { color: #c678dd; }
 
-	.group-operacional { border-color: rgba(253, 224, 71, 0.2); }
+	.group-operacional { border-color: rgba(229, 192, 123, 0.2); }
 	.group-operacional::before { background: var(--warning); }
 	.group-operacional .group-title { color: var(--warning); }
 
-	.group-marco { border-color: rgba(244, 114, 182, 0.2); }
-	.group-marco::before { background: #f472b6; }
-	.group-marco .group-title { color: #f472b6; }
+	.group-marco { border-color: rgba(224, 108, 117, 0.2); }
+	.group-marco::before { background: var(--error); }
+	.group-marco .group-title { color: var(--error); }
 
-	.group-metodo { border-color: rgba(45, 212, 191, 0.2); }
-	.group-metodo::before { background: #2dd4bf; }
-	.group-metodo .group-title { color: #2dd4bf; }
+	.group-metodo { border-color: rgba(86, 182, 194, 0.2); }
+	.group-metodo::before { background: #56b6c2; }
+	.group-metodo .group-title { color: #56b6c2; }
 
 	.group-title {
 		display: flex;
@@ -1240,4 +1240,5 @@
 		font-size: 1.125rem;
 		font-weight: 600;
 	}
+</style>
 </style>
