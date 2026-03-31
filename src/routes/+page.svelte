@@ -1,19 +1,15 @@
 <script lang="ts">
 	import { citasStore, loadingStore } from '$lib/stores/data';
 	import { base } from '$app/paths';
+	import { crearCita, obtenerCitas } from '$lib/services/citas';
+	import { showToast } from '$lib/stores/toast';
+	import { parseBibTeX } from '$lib/utils/bibtex';
 	import type { Cita } from '$lib/types';
 	import { formatAutores } from '$lib/types';
 	import { fade, fly } from 'svelte/transition';
 
 	let search = $state('');
-
-	const badgeColors: Record<string, string> = {
-		libro: 'var(--badge-libro)',
-		articulo: 'var(--badge-articulo)',
-		reporte: 'var(--badge-reporte)',
-		tesis: 'var(--badge-tesis)',
-		web: 'var(--badge-web)'
-	};
+	let importing = $state(false);
 
 	let filtradas = $derived.by(() => {
 		const q = search.toLowerCase().trim();
@@ -25,16 +21,58 @@
 			c.cita_textual.toLowerCase().includes(q)
 		);
 	});
+
+	async function handleBibImport(e: Event) {
+		const input = e.target as HTMLInputElement;
+		if (!input.files || input.files.length === 0) return;
+		const file = input.files[0];
+		const text = await file.text();
+		
+		importing = true;
+		try {
+			const parsed = parseBibTeX(text);
+			if (parsed.length === 0) {
+				showToast('No se encontraron entradas válidas en el archivo .bib', 'error');
+				return;
+			}
+			
+			let count = 0;
+			for (const entry of parsed) {
+				await crearCita(entry);
+				count++;
+			}
+			
+			citasStore.set(await obtenerCitas());
+			showToast(`Se importaron ${count} citas correctamente`);
+		} catch (err) {
+			console.error('Error importando BibTeX:', err);
+			showToast('Error al procesar el archivo .bib', 'error');
+		} finally {
+			importing = false;
+			input.value = '';
+		}
+	}
 </script>
 
 <div class="page-header" in:fade={{ duration: 400 }}>
 	<h1>Biblioteca <span class="text-accent">Académica</span></h1>
-	<a href="{base}/nueva" class="fab" title="Nueva cita">
-		<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-			<line x1="12" y1="5" x2="12" y2="19"></line>
-			<line x1="5" y1="12" x2="19" y2="12"></line>
-		</svg>
-	</a>
+	<div class="header-actions">
+		<label class="btn-import-bib" title="Importar desde BibTeX (.bib)">
+			<input type="file" accept=".bib" onchange={handleBibImport} disabled={importing} />
+			<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+				<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+				<polyline points="17 8 12 3 7 8"></polyline>
+				<line x1="12" y1="3" x2="12" y2="15"></line>
+			</svg>
+			<span>{importing ? 'Importando...' : 'BibTeX'}</span>
+		</label>
+		<a href="{base}/nueva" class="fab" title="Nueva cita">
+			<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+				<line x1="12" y1="5" x2="12" y2="19"></line>
+				<line x1="5" y1="12" x2="19" y2="12"></line>
+			</svg>
+		</a>
+	</div>
 </div>
 
 <div class="search-container" in:fade={{ delay: 150, duration: 400 }}>
@@ -71,7 +109,7 @@
 				<a href="{base}/citas/{cita.id}" class="cita-card">
 					<div class="cita-header">
 						<span class="cita-autor">{formatAutores(cita.autores)} <span class="separator">/</span> {cita.año}</span>
-						<span class="badge" style="background: {badgeColors[cita.tipo] ?? 'var(--border)'}">{cita.tipo}</span>
+						<span class="badge badge-{cita.tipo}">{cita.tipo}</span>
 					</div>
 					<div class="cita-titulo">{cita.titulo}</div>
 					{#if cita.temas.length > 0}
@@ -94,6 +132,11 @@
 		justify-content: space-between;
 		margin-bottom: 32px;
 	}
+	.header-actions {
+		display: flex;
+		align-items: center;
+		gap: 16px;
+	}
 	h1 {
 		font-size: 2.2rem;
 		font-weight: 900;
@@ -102,6 +145,29 @@
 	}
 	.text-accent {
 		color: var(--accent);
+	}
+	.btn-import-bib {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		padding: 10px 16px;
+		background: var(--bg-surface);
+		border: 1px solid var(--border);
+		border-radius: var(--radius-md);
+		color: var(--text-secondary);
+		cursor: pointer;
+		font-family: var(--font-mono);
+		font-size: 0.8rem;
+		font-weight: 700;
+		transition: all 0.2s;
+	}
+	.btn-import-bib:hover {
+		border-color: var(--accent-dim);
+		color: var(--accent);
+		background: var(--bg-hover);
+	}
+	.btn-import-bib input {
+		display: none;
 	}
 	.fab {
 		width: 60px;
@@ -176,7 +242,7 @@
 		flex-direction: column;
 		height: 100%;
 		background: var(--bg-surface);
-		border: 1px solid var(--border);
+		border: 1.5px solid var(--border);
 		border-radius: var(--radius-lg);
 		padding: 28px;
 		text-decoration: none;
@@ -212,17 +278,6 @@
 	.separator {
 		color: var(--text-muted);
 		margin: 0 4px;
-	}
-	.badge {
-		font-family: var(--font-mono);
-		font-size: 0.65rem;
-		padding: 4px 10px;
-		border-radius: 6px;
-		color: #fff;
-		text-transform: uppercase;
-		font-weight: 800;
-		letter-spacing: 0.1em;
-		border: 1px solid rgba(255, 255, 255, 0.1);
 	}
 	.cita-titulo {
 		font-size: 1.2rem;

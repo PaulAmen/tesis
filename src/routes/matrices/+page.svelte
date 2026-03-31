@@ -726,9 +726,9 @@
 	.section-group {
 		margin-bottom: 32px;
 		padding: 24px;
-		background: rgba(255, 255, 255, 0.02);
+		background: var(--bg-surface);
 		border-radius: var(--radius-lg);
-		border: 1px solid var(--border);
+		border: 1.5px solid var(--border);
 		position: relative;
 		overflow: hidden;
 	}
@@ -738,12 +738,12 @@
 		left: 0;
 		top: 0;
 		bottom: 0;
-		width: 4px;
+		width: 6px;
 		background: var(--border);
 	}
 
 	/* Specific group colors - Subtle and professional pastel/desaturated */
-	.group-general { border-color: rgba(152, 195, 121, 0.2); }
+	.group-general { border-color: rgba(142, 164, 200, 0.2); }
 	.group-general::before { background: var(--accent); }
 	.group-general .group-title { color: var(--accent); }
 

@@ -463,15 +463,6 @@
 		align-items: center;
 		margin-bottom: 12px;
 	}
-	.badge {
-		font-family: var(--font-mono);
-		font-size: 0.75rem;
-		padding: 4px 10px;
-		border-radius: var(--radius-sm);
-		text-transform: uppercase;
-		font-weight: 700;
-		color: #000;
-	}
 	.year {
 		font-family: var(--font-mono);
 		font-size: 1rem;
@@ -507,7 +498,7 @@
 		letter-spacing: 0.05em;
 	}
 	blockquote {
-		border-left: 4px solid var(--accent);
+		border-left: 6px solid var(--accent);
 		padding: 16px 20px;
 		margin: 20px 0;
 		background: var(--bg-elevated);
@@ -796,3 +787,4 @@
 		font-size: 1.125rem;
 	}
 </style>
+>

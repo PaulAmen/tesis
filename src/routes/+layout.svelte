@@ -61,19 +61,19 @@
 	}
 
 	:global(:root) {
-		--bg-base: #121212;
-		--bg-surface: #1e1e1e;
-		--bg-elevated: #282a36;
-		--bg-hover: #323444;
-		--border: rgba(255, 255, 255, 0.05);
-		--border-bright: rgba(255, 255, 255, 0.1);
+		--bg-base: #1e1e2e;
+		--bg-surface: #27293d;
+		--bg-elevated: #32354f;
+		--bg-hover: #3d4163;
+		--border: rgba(142, 164, 200, 0.18);
+		--border-bright: rgba(142, 164, 200, 0.35);
 		--text-primary: #e0e0e0;
 		--text-secondary: #d4d4d4;
 		--text-muted: #808080;
-		--accent: #98c379;
-		--accent-dim: #6a9955;
-		--accent-glow: rgba(106, 153, 85, 0.15);
-		--success: #98c379;
+		--accent: #8ea4c8;
+		--accent-dim: #6b7d9a;
+		--accent-glow: rgba(107, 125, 154, 0.1);
+		--success: #89b482;
 		--error: #e06c75;
 		--warning: #e5c07b;
 
@@ -81,11 +81,17 @@
 		--font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 		--font-sans: 'Inter', -apple-system, sans-serif;
 
-		--badge-libro: rgba(97, 175, 239, 0.15);
-		--badge-articulo: rgba(229, 192, 123, 0.15);
-		--badge-reporte: rgba(198, 120, 221, 0.15);
-		--badge-tesis: rgba(86, 182, 194, 0.15);
-		--badge-web: rgba(224, 108, 117, 0.15);
+		--badge-libro: rgba(97, 175, 239, 0.12);
+		--badge-articulo: rgba(229, 192, 123, 0.12);
+		--badge-reporte: rgba(198, 120, 221, 0.12);
+		--badge-tesis: rgba(86, 182, 194, 0.12);
+		--badge-web: rgba(224, 108, 117, 0.12);
+
+		--text-libro: #7fb4f5;
+		--text-articulo: #eacb8a;
+		--text-reporte: #d496e5;
+		--text-tesis: #78c5cf;
+		--text-web: #e88a91;
 
 		--radius-sm: 8px;
 		--radius-md: 14px;
@@ -107,19 +113,6 @@
 		overflow-x: hidden;
 	}
 
-	:global(body::before) {
-		content: "";
-		position: fixed;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		opacity: 0.03;
-		pointer-events: none;
-		z-index: 9999;
-		background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/svg%3E");
-	}
-
 	:global(h1, h2, h3, h4) {
 		font-family: var(--font-sans);
 		font-weight: 800;
@@ -135,7 +128,6 @@
 
 	:global(a:hover) {
 		color: var(--accent);
-		text-shadow: 0 0 12px var(--accent-glow);
 	}
 
 	:global(button) {
@@ -185,6 +177,24 @@
 		background-position: right 16px center;
 		padding-right: 44px;
 	}
+
+	:global(.badge) {
+		display: inline-block;
+		padding: 4px 10px;
+		border-radius: 6px;
+		font-family: var(--font-mono);
+		font-size: 0.65rem;
+		font-weight: 800;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		border: 1.5px solid transparent;
+	}
+
+	:global(.badge-libro) { background: var(--badge-libro); color: var(--text-libro); border-color: rgba(127, 180, 245, 0.2); }
+	:global(.badge-articulo) { background: var(--badge-articulo); color: var(--text-articulo); border-color: rgba(234, 203, 138, 0.2); }
+	:global(.badge-reporte) { background: var(--badge-reporte); color: var(--text-reporte); border-color: rgba(212, 150, 229, 0.2); }
+	:global(.badge-tesis) { background: var(--badge-tesis); color: var(--text-tesis); border-color: rgba(120, 197, 207, 0.2); }
+	:global(.badge-web) { background: var(--badge-web); color: var(--text-web); border-color: rgba(232, 138, 145, 0.2); }
 
 	.app-shell {
 		max-width: 1600px;

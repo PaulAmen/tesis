@@ -295,8 +295,8 @@
 
 	/* Result */
 	.result-box {
-		background: rgba(152, 195, 121, 0.05);
-		border: 1px solid rgba(152, 195, 121, 0.2);
+		background: rgba(142, 164, 200, 0.05);
+		border: 1px solid rgba(142, 164, 200, 0.2);
 		border-radius: var(--radius-md);
 		padding: 20px;
 		margin-bottom: 24px;

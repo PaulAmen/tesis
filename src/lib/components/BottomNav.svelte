@@ -93,8 +93,8 @@
 	}
 	.nav-item.active {
 		color: var(--accent);
-		background: rgba(152, 195, 121, 0.08);
-		box-shadow: inset 0 0 12px rgba(152, 195, 121, 0.05);
+		background: rgba(142, 164, 200, 0.08);
+		box-shadow: inset 0 0 12px rgba(142, 164, 200, 0.05);
 	}
 	.nav-item.active .icon-wrapper {
 		transform: scale(1.1);
