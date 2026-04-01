@@ -1,16 +1,24 @@
 <script lang="ts">
 	import { obtenerBorradores } from '$lib/services/borradores';
+	import { obtenerCitas } from '$lib/services/citas';
+	import { obtenerImagenes } from '$lib/services/imagenes';
+	import { obtenerSeccionesPersonalizadas } from '$lib/services/secciones';
 	import { exportarBorradores } from '$lib/services/exportService';
+	import { generarTeX, generarBib, descargarTeX } from '$lib/services/texExport';
 	import { showToast } from '$lib/stores/toast';
 	import type { ExportAction } from '$lib/types';
 
+	type FormatoExport = ExportAction | 'generate_tex';
+
 	let abierto = $state(false);
-	let accion = $state<ExportAction>('generate_pdf');
+	let accion = $state<FormatoExport>('generate_pdf');
 	let templateId = $state('');
 	let titulo = $state('');
 	let cargando = $state(false);
 	let urlResultado = $state('');
 	let error = $state('');
+
+	const esLaTeX = $derived(accion === 'generate_tex');
 
 	function togglePanel() {
 		abierto = !abierto;
@@ -18,7 +26,33 @@
 		error = '';
 	}
 
+	async function handleExportarTeX() {
+		cargando = true;
+		error = '';
+		try {
+			const [borradores, citas, secciones, imagenes] = await Promise.all([
+				obtenerBorradores(), obtenerCitas(), obtenerSeccionesPersonalizadas(), obtenerImagenes()
+			]);
+			if (borradores.length === 0) {
+				error = 'No hay borradores guardados para exportar.';
+				return;
+			}
+			const tex = generarTeX(borradores, citas, titulo.trim() || undefined, secciones, imagenes);
+			const bib = generarBib(citas);
+			await descargarTeX(tex, bib, imagenes);
+			showToast('Archivo tesis_uiix.zip descargado');
+		} catch (e: any) {
+			error = e.message ?? 'Error al generar el archivo LaTeX.';
+			showToast(error, 'error');
+		} finally {
+			cargando = false;
+		}
+	}
+
 	async function handleExportar() {
+		if (esLaTeX) {
+			return handleExportarTeX();
+		}
 		if (!templateId.trim()) {
 			error = 'Ingresa el ID de la plantilla de Google Docs.';
 			return;
@@ -34,7 +68,7 @@
 			}
 			const url = await exportarBorradores(
 				borradores,
-				accion,
+				accion as ExportAction,
 				templateId.trim(),
 				titulo.trim() || undefined
 			);
@@ -68,7 +102,11 @@
 		</div>
 
 		<p class="panel-desc">
-			Se exportarán todos los borradores guardados a un único documento usando tu plantilla de Google Docs.
+			{#if esLaTeX}
+				Se generará un archivo .tex con formato UIIX (APA 7) listo para compilar con pdflatex. Incluye borradores y bibliografía.
+			{:else}
+				Se exportarán todos los borradores guardados a un único documento usando tu plantilla de Google Docs.
+			{/if}
 		</p>
 
 		<!-- Selector de formato -->
@@ -97,10 +135,23 @@
 					</svg>
 					Google Doc
 				</button>
+				<button
+					class="format-btn"
+					class:active={accion === 'generate_tex'}
+					onclick={() => accion = 'generate_tex'}
+				>
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<path d="M4 7V4h16v3"/>
+						<path d="M9 20h6"/>
+						<path d="M12 4v16"/>
+					</svg>
+					LaTeX
+				</button>
 			</div>
 		</div>
 
-		<!-- ID de plantilla -->
+		<!-- ID de plantilla (solo para PDF / Google Doc) -->
+		{#if !esLaTeX}
 		<div class="field">
 			<label for="template-id" class="field-label">ID de la plantilla</label>
 			<input
@@ -114,6 +165,7 @@
 				docs.google.com/document/d/<strong>[ID]</strong>/edit
 			</span>
 		</div>
+		{/if}
 
 		<!-- Título del documento -->
 		<div class="field">
@@ -141,9 +193,9 @@
 
 		<button class="btn-export" onclick={handleExportar} disabled={cargando}>
 			{#if cargando}
-				<span class="spinner"></span> Generando documento…
+				<span class="spinner"></span> {esLaTeX ? 'Generando .tex…' : 'Generando documento…'}
 			{:else}
-				Exportar {accion === 'generate_pdf' ? 'PDF' : 'Google Doc'}
+				Exportar {accion === 'generate_pdf' ? 'PDF' : accion === 'generate_doc' ? 'Google Doc' : 'LaTeX (.tex)'}
 			{/if}
 		</button>
 	</div>

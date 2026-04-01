@@ -103,13 +103,31 @@ export const GRUPOS_SECCIONES = [
 
 export interface Borrador {
 	id: string;
-	seccion: SeccionUIIX;
+	seccion: string; // SeccionUIIX key or custom section ID
 	subseccion: string;
 	titulo: string;
 	contenido: string;
 	citas_usadas: string[];
 	creado_en: Date;
 	actualizado_en: Date;
+}
+
+export interface SeccionPersonalizada {
+	id: string;
+	nombre: string;
+	orden: number;
+	creado_en: Date;
+}
+
+export interface ImagenTesis {
+	id: string;
+	nombre: string;
+	caption: string;
+	seccion: string;
+	url: string;
+	storagePath: string;
+	ancho: number;
+	creado_en: Date;
 }
 
 export type TipoMatriz = 'congruencia' | 'enfoque' | 'tipo_investigacion' | 'tecnicas' | 'unidades';
@@ -159,14 +177,31 @@ export type ExportResponse = ExportResult | ExportError;
 export function formatAutores(autores: string[]): string {
 	if (!autores || autores.length === 0) return '';
 	if (autores.length === 1) return autores[0];
-	if (autores.length === 2) return `${autores[0]} & ${autores[1]}`;
-	return autores.slice(0, -1).join(', ') + ' & ' + autores[autores.length - 1];
+	if (autores.length === 2) return `${autores[0]} y ${autores[1]}`;
+	return autores.slice(0, -1).join(', ') + ' y ' + autores[autores.length - 1];
 }
 
+/**
+ * Formatea autores para citas in-text según APA 7.
+ * - Solo apellidos (sin iniciales).
+ * - 1 autor: Apellido
+ * - 2 autores: Apellido1 y Apellido2
+ * - 3+ autores: Apellido1 et al.
+ */
 export function formatAutoresCorto(autores: string[]): string {
 	if (!autores || autores.length === 0) return '';
-	if (autores.length <= 2) return formatAutores(autores);
-	return `${autores[0]} et al.`;
+
+	const extraerApellido = (autor: string) => {
+		if (autor.includes(',')) return autor.split(',')[0].trim();
+		// Elimina iniciales tipo "F. F." al final o al inicio si no hay coma
+		return autor.replace(/\s[A-Z]\.(?:\s?[A-Z]\.)*$/, '').replace(/^[A-Z]\.(?:\s?[A-Z]\.)*\s/, '').trim();
+	};
+
+	const apellidos = autores.map(extraerApellido);
+
+	if (apellidos.length === 1) return apellidos[0];
+	if (apellidos.length === 2) return `${apellidos[0]} y ${apellidos[1]}`;
+	return `${apellidos[0]} et al.`;
 }
 
 // ---------------------------------------------------------------

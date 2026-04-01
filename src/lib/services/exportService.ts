@@ -14,7 +14,7 @@ function buildDocumentData(borradores: Borrador[]): Record<string, string> {
 	for (const borrador of borradores) {
 		if (!borrador.contenido.trim()) continue;
 
-		const nombreSeccion = SECCIONES_UIIX[borrador.seccion];
+		const nombreSeccion = SECCIONES_UIIX[borrador.seccion as keyof typeof SECCIONES_UIIX] ?? borrador.seccion;
 		if (data[nombreSeccion]) {
 			data[nombreSeccion] = data[nombreSeccion] + '\n\n' + borrador.contenido;
 		} else {

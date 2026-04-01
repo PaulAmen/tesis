@@ -3,7 +3,7 @@ import {
 	query, where, orderBy, serverTimestamp
 } from 'firebase/firestore';
 import { db } from '$lib/firebase/config';
-import type { Borrador, SeccionUIIX } from '$lib/types';
+import type { Borrador } from '$lib/types';
 
 const COL = 'borradores';
 
@@ -27,7 +27,7 @@ export async function obtenerBorradores(): Promise<Borrador[]> {
 	return snap.docs.map(docToBorrador);
 }
 
-export async function obtenerBorradoresPorSeccion(seccion: SeccionUIIX): Promise<Borrador[]> {
+export async function obtenerBorradoresPorSeccion(seccion: string): Promise<Borrador[]> {
 	const q = query(collection(db, COL), where('seccion', '==', seccion), orderBy('actualizado_en', 'desc'));
 	const snap = await getDocs(q);
 	return snap.docs.map(docToBorrador);
