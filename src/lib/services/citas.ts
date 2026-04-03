@@ -20,6 +20,7 @@ function docToCita(d: any): Cita {
 		cita_textual: data.cita_textual ?? '',
 		paginas: data.paginas ?? '',
 		tipo: data.tipo ?? 'libro',
+		doi: data.doi ?? '',
 		temas: data.temas ?? [],
 		notas: data.notas ?? '',
 		referencia_apa: data.referencia_apa ?? '',
@@ -48,7 +49,7 @@ export async function actualizarCita(id: string, data: Partial<Cita>): Promise<v
 	const updateData: any = { ...data };
 	delete updateData.id;
 	delete updateData.creado_en;
-	if (data.autores || data.año || data.titulo || data.fuente || data.paginas || data.tipo) {
+	if (data.autores || data.año || data.titulo || data.fuente || data.paginas || data.tipo || data.doi !== undefined) {
 		updateData.referencia_apa = generarReferenciaAPA(data as any);
 	}
 	await updateDoc(ref, updateData);

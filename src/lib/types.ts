@@ -9,6 +9,7 @@ export interface Cita {
 	cita_textual: string;
 	paginas: string;
 	tipo: TipoCita;
+	doi: string;
 	temas: string[];
 	notas: string;
 	referencia_apa: string;

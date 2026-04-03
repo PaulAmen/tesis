@@ -9,8 +9,10 @@
 	import { obtenerCitas } from '$lib/services/citas';
 	import { obtenerConexiones } from '$lib/services/conexiones';
 	import { puntosClavesCita, comoUsarCita, conexionesIACita } from '$lib/services/ia';
+	import { obtenerTemasMarcoTeorico } from '$lib/services/matrices';
 	import { formatAutores } from '$lib/types';
 	import type { Cita, Conexion, TipoCita } from '$lib/types';
+	import { onMount } from 'svelte';
 
 	let citaId = $derived(page.params.id);
 	let cita = $derived($citasStore.find((c: Cita) => c.id === citaId));
@@ -52,9 +54,24 @@
 	let editCitaTextual = $state('');
 	let editPaginas = $state('');
 	let editTipo = $state<TipoCita>('libro');
-	let editTemasInput = $state('');
+	let editDoi = $state('');
+	let editTemasSeleccionados = $state<string[]>([]);
 	let editNotas = $state('');
 	let guardandoEdit = $state(false);
+
+	let temasDisponibles = $state<string[]>([]);
+
+	onMount(async () => {
+		temasDisponibles = await obtenerTemasMarcoTeorico();
+	});
+
+	function toggleEditTema(tema: string) {
+		if (editTemasSeleccionados.includes(tema)) {
+			editTemasSeleccionados = editTemasSeleccionados.filter(t => t !== tema);
+		} else {
+			editTemasSeleccionados = [...editTemasSeleccionados, tema];
+		}
+	}
 
 	function iniciarEdicion() {
 		if (!cita) return;
@@ -65,7 +82,8 @@
 		editCitaTextual = cita.cita_textual;
 		editPaginas = cita.paginas;
 		editTipo = cita.tipo;
-		editTemasInput = cita.temas.join(', ');
+		editDoi = cita.doi;
+		editTemasSeleccionados = [...cita.temas];
 		editNotas = cita.notas;
 		editando = true;
 	}
@@ -92,7 +110,8 @@
 				cita_textual: editCitaTextual.trim(),
 				paginas: editPaginas.trim(),
 				tipo: editTipo,
-				temas: editTemasInput.split(',').map(t => t.trim()).filter(Boolean),
+				doi: editDoi.trim(),
+				temas: editTemasSeleccionados,
 				notas: editNotas.trim()
 			});
 			citasStore.set(await obtenerCitas());
@@ -243,13 +262,31 @@
 				</div>
 
 				<div class="edit-field">
+					<label for="edit-doi">DOI</label>
+					<input id="edit-doi" type="text" placeholder="10.1234/ejemplo" bind:value={editDoi} />
+				</div>
+
+				<div class="edit-field">
 					<label for="edit-cita">Cita textual</label>
 					<textarea id="edit-cita" bind:value={editCitaTextual} rows="4"></textarea>
 				</div>
 
 				<div class="edit-field">
-					<label for="edit-temas">Temas (separados por coma)</label>
-					<input id="edit-temas" type="text" bind:value={editTemasInput} />
+					<span class="edit-label">Temas del marco teórico</span>
+					{#if temasDisponibles.length === 0}
+						<p class="hint">No hay temas definidos en la matriz de congruencia</p>
+					{:else}
+						<div class="tema-pills">
+							{#each temasDisponibles as tema}
+								<button
+									type="button"
+									class="tema-pill"
+									class:selected={editTemasSeleccionados.includes(tema)}
+									onclick={() => toggleEditTema(tema)}
+								>{tema}</button>
+							{/each}
+						</div>
+					{/if}
 				</div>
 
 				<div class="edit-field">
@@ -279,6 +316,9 @@
 			{/if}
 			{#if cita.paginas}
 				<div class="field"><span class="label">Páginas</span> {cita.paginas}</div>
+			{/if}
+			{#if cita.doi}
+				<div class="field"><span class="label">DOI</span> <a href={cita.doi.startsWith('http') ? cita.doi : `https://doi.org/${cita.doi}`} target="_blank" rel="noopener">{cita.doi}</a></div>
 			{/if}
 			{#if cita.cita_textual}
 				<blockquote>{cita.cita_textual}</blockquote>
@@ -600,6 +640,36 @@
 	}
 	.btn-autor-add:hover {
 		border-color: var(--accent);
+	}
+	.hint {
+		font-size: 0.8125rem;
+		color: var(--text-muted);
+		font-style: italic;
+	}
+	.tema-pills {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+	}
+	.tema-pill {
+		font-family: var(--font-mono);
+		font-size: 0.75rem;
+		padding: 6px 14px;
+		border-radius: 20px;
+		background: var(--bg-elevated);
+		color: var(--text-secondary);
+		border: 1px solid var(--border);
+		cursor: pointer;
+		transition: all 0.15s;
+	}
+	.tema-pill:hover {
+		border-color: var(--accent-dim);
+	}
+	.tema-pill.selected {
+		background: var(--accent);
+		color: #121212;
+		border-color: var(--accent);
+		font-weight: 600;
 	}
 	.edit-actions {
 		display: flex;

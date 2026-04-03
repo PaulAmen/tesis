@@ -88,6 +88,7 @@ export function parseBibTeX(bib: string): Omit<Cita, 'id' | 'creado_en' | 'refer
 			cita_textual: '',
 			paginas: fields.pages || '',
 			tipo: appTipo,
+			doi: fields.doi || '',
 			temas: [],
 			notas: ''
 		});

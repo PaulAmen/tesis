@@ -8,17 +8,20 @@ interface ApaInput {
 	fuente: string;
 	paginas: string;
 	tipo: TipoCita;
+	doi?: string;
 }
 
 export function generarReferenciaAPA(data: ApaInput): string {
-	const { autores, año, titulo, fuente, paginas, tipo } = data;
+	const { autores, año, titulo, fuente, paginas, tipo, doi } = data;
 	const autor = formatAutores(autores);
 
+	let ref: string;
 	switch (tipo) {
 		case 'libro': {
 			const parts = [`${autor} (${año}).`, `${titulo}.`];
 			if (fuente) parts.push(`${fuente}.`);
-			return parts.join(' ');
+			ref = parts.join(' ');
+			break;
 		}
 		case 'articulo': {
 			const parts = [`${autor} (${año}).`, `${titulo}.`];
@@ -27,24 +30,35 @@ export function generarReferenciaAPA(data: ApaInput): string {
 			} else if (fuente) {
 				parts.push(`${fuente}.`);
 			}
-			return parts.join(' ');
+			ref = parts.join(' ');
+			break;
 		}
 		case 'reporte': {
 			const parts = [`${autor} (${año}).`, `${titulo}.`];
 			if (fuente) parts.push(`${fuente}.`);
-			return parts.join(' ');
+			ref = parts.join(' ');
+			break;
 		}
 		case 'tesis': {
 			const parts = [`${autor} (${año}).`, `${titulo} [Tesis doctoral].`];
 			if (fuente) parts.push(`${fuente}.`);
-			return parts.join(' ');
+			ref = parts.join(' ');
+			break;
 		}
 		case 'web': {
 			const parts = [`${autor} (${año}).`, `${titulo}.`];
 			if (fuente) parts.push(fuente);
-			return parts.join(' ');
+			ref = parts.join(' ');
+			break;
 		}
 		default:
-			return `${autor} (${año}). ${titulo}.`;
+			ref = `${autor} (${año}). ${titulo}.`;
 	}
+
+	if (doi) {
+		const doiUrl = doi.startsWith('http') ? doi : `https://doi.org/${doi}`;
+		ref += ` ${doiUrl}`;
+	}
+
+	return ref;
 }

@@ -58,6 +58,20 @@ export async function obtenerMetaCongruencia(): Promise<{
 	};
 }
 
+export async function obtenerTemasMarcoTeorico(): Promise<string[]> {
+	const meta = await obtenerMetaCongruencia();
+	const count = meta.counts.tema_mt ?? 3;
+	const temas: string[] = [];
+	for (let i = 1; i <= count; i++) {
+		const snap = await getDoc(doc(db, COL, `congruencia_tema_mt_${i}`));
+		if (snap.exists()) {
+			const contenido = snap.data().contenido?.trim();
+			if (contenido) temas.push(contenido);
+		}
+	}
+	return temas;
+}
+
 export async function guardarMetaCongruencia(
 	counts: Record<string, number>,
 	conexiones: Record<string, string>

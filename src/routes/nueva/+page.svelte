@@ -2,9 +2,11 @@
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
 	import { crearCita, obtenerCitas } from '$lib/services/citas';
+	import { obtenerTemasMarcoTeorico } from '$lib/services/matrices';
 	import { citasStore } from '$lib/stores/data';
 	import { showToast } from '$lib/stores/toast';
 	import type { TipoCita } from '$lib/types';
+	import { onMount } from 'svelte';
 
 	let autores = $state<string[]>(['']);
 	let año = $state(new Date().getFullYear());
@@ -13,9 +15,23 @@
 	let cita_textual = $state('');
 	let paginas = $state('');
 	let tipo = $state<TipoCita>('libro');
-	let temasInput = $state('');
+	let doi = $state('');
+	let temasDisponibles = $state<string[]>([]);
+	let temasSeleccionados = $state<string[]>([]);
 	let notas = $state('');
 	let guardando = $state(false);
+
+	onMount(async () => {
+		temasDisponibles = await obtenerTemasMarcoTeorico();
+	});
+
+	function toggleTema(tema: string) {
+		if (temasSeleccionados.includes(tema)) {
+			temasSeleccionados = temasSeleccionados.filter(t => t !== tema);
+		} else {
+			temasSeleccionados = [...temasSeleccionados, tema];
+		}
+	}
 
 	function addAutor() { autores = [...autores, '']; }
 	function removeAutor(i: number) {
@@ -32,7 +48,6 @@
 		}
 		guardando = true;
 		try {
-			const temas = temasInput.split(',').map(t => t.trim()).filter(Boolean);
 			await crearCita({
 				autores: autoresLimpios,
 				año,
@@ -41,7 +56,8 @@
 				cita_textual: cita_textual.trim(),
 				paginas: paginas.trim(),
 				tipo,
-				temas,
+				doi: doi.trim(),
+				temas: temasSeleccionados,
 				notas: notas.trim()
 			});
 			citasStore.set(await obtenerCitas());
@@ -108,13 +124,31 @@
 	</div>
 
 	<div class="field">
+		<label for="doi">DOI</label>
+		<input id="doi" type="text" placeholder="10.1234/ejemplo" bind:value={doi} />
+	</div>
+
+	<div class="field">
 		<label for="cita">Cita textual</label>
 		<textarea id="cita" placeholder="Texto citado literalmente..." bind:value={cita_textual} rows="4"></textarea>
 	</div>
 
 	<div class="field">
-		<label for="temas">Temas (separados por coma)</label>
-		<input id="temas" type="text" placeholder="metodología, educación, TIC" bind:value={temasInput} />
+		<span class="label-span">Temas del marco teórico</span>
+		{#if temasDisponibles.length === 0}
+			<p class="hint">No hay temas definidos en la matriz de congruencia</p>
+		{:else}
+			<div class="tema-pills">
+				{#each temasDisponibles as tema}
+					<button
+						type="button"
+						class="tema-pill"
+						class:selected={temasSeleccionados.includes(tema)}
+						onclick={() => toggleTema(tema)}
+					>{tema}</button>
+				{/each}
+			</div>
+		{/if}
 	</div>
 
 	<div class="field">
@@ -198,6 +232,36 @@
 	}
 	.btn-autor-add:hover {
 		border-color: var(--accent);
+	}
+	.hint {
+		font-size: 0.8125rem;
+		color: var(--text-muted);
+		font-style: italic;
+	}
+	.tema-pills {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+	}
+	.tema-pill {
+		font-family: var(--font-mono);
+		font-size: 0.75rem;
+		padding: 6px 14px;
+		border-radius: 20px;
+		background: var(--bg-elevated);
+		color: var(--text-secondary);
+		border: 1px solid var(--border);
+		cursor: pointer;
+		transition: all 0.15s;
+	}
+	.tema-pill:hover {
+		border-color: var(--accent-dim);
+	}
+	.tema-pill.selected {
+		background: var(--accent);
+		color: #121212;
+		border-color: var(--accent);
+		font-weight: 600;
 	}
 	.btn-primary {
 		padding: 12px;
