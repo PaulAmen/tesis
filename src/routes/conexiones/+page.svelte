@@ -1,13 +1,9 @@
 <script lang="ts">
 	import { base } from '$app/paths';
-	import { citasStore, conexionesStore } from '$lib/stores/data';
-	import { showToast } from '$lib/stores/toast';
-	import { eliminarConexion, obtenerConexiones } from '$lib/services/conexiones';
+	import { citasStore } from '$lib/stores/data';
 	import { formatAutores, formatAutoresCorto } from '$lib/types';
-	import type { Cita, Conexion } from '$lib/types';
+	import type { Cita } from '$lib/types';
 	import { onMount, tick, untrack } from 'svelte';
-
-	let tab = $state<'temas' | 'manuales'>('temas');
 
 	// ── Graph state ──
 	interface GraphNode {
@@ -315,32 +311,14 @@
 		viewBox = { x: 0, y: 0, w: canvasW, h: canvasH };
 	}
 
-	// ── Manual connections (unchanged) ──
 	function getCitaById(id: string): Cita | undefined {
 		return $citasStore.find((c: Cita) => c.id === id);
 	}
-
-	async function handleEliminar(cx: Conexion) {
-		if (!confirm('¿Eliminar esta conexión?')) return;
-		try {
-			await eliminarConexion(cx.id);
-			conexionesStore.set(await obtenerConexiones());
-			showToast('Conexión eliminada');
-		} catch {
-			showToast('Error al eliminar', 'error');
-		}
-	}
 </script>
 
-<h1>Conexiones</h1>
+<h1>Nexos</h1>
 
-<div class="tabs">
-	<button class="tab" class:active={tab === 'temas'} onclick={() => tab = 'temas'}>Nexos</button>
-	<button class="tab" class:active={tab === 'manuales'} onclick={() => tab = 'manuales'}>Manuales</button>
-</div>
-
-{#if tab === 'temas'}
-	{#if $citasStore.filter(c => c.temas.length > 0).length === 0}
+{#if $citasStore.filter(c => c.temas.length > 0).length === 0}
 		<p class="empty">No hay citas con temas asignados aún.</p>
 	{:else}
 		<div class="graph-toolbar">
@@ -466,36 +444,6 @@
 				{/if}
 			{/if}
 		</div>
-	{/if}
-{:else}
-	{#if $conexionesStore.length === 0}
-		<p class="empty">No hay conexiones manuales.</p>
-	{:else}
-		<div class="conexion-list">
-			{#each $conexionesStore as cx (cx.id)}
-				{@const origen = getCitaById(cx.cita_origen_id)}
-				{@const destino = getCitaById(cx.cita_destino_id)}
-				<div class="conexion-card">
-					<div class="conexion-pair">
-						<a href="{base}/citas/{cx.cita_origen_id}" class="conexion-cita">
-							{origen ? `${formatAutores(origen.autores)} (${origen.año})` : '(eliminada)'}
-						</a>
-						<span class="conexion-arrow">&rarr;</span>
-						<a href="{base}/citas/{cx.cita_destino_id}" class="conexion-cita">
-							{destino ? `${formatAutores(destino.autores)} (${destino.año})` : '(eliminada)'}
-						</a>
-					</div>
-					{#if cx.etiqueta}
-						<span class="conexion-etiqueta">{cx.etiqueta}</span>
-					{/if}
-					{#if cx.comentario}
-						<p class="conexion-comentario">{cx.comentario}</p>
-					{/if}
-					<button class="btn-delete-sm" onclick={() => handleEliminar(cx)}>Eliminar</button>
-				</div>
-			{/each}
-		</div>
-	{/if}
 {/if}
 
 <style>
@@ -503,31 +451,6 @@
 		font-size: 1.5rem;
 		margin-bottom: 16px;
 	}
-	.tabs {
-		display: flex;
-		gap: 0;
-		margin-bottom: 16px;
-		border: 1px solid var(--border);
-		border-radius: 8px;
-		overflow: hidden;
-	}
-	.tab {
-		flex: 1;
-		padding: 10px;
-		font-family: var(--font-mono);
-		font-size: 0.8125rem;
-		text-transform: uppercase;
-		background: var(--bg-surface);
-		color: var(--text-muted);
-		border: none;
-		cursor: pointer;
-		transition: all 0.2s;
-	}
-	.tab.active {
-		background: var(--accent);
-		color: #121212;
-	}
-
 	/* ── Graph ── */
 	.graph-toolbar {
 		display: flex;
@@ -690,69 +613,6 @@
 		font-size: 0.8125rem;
 		color: var(--accent);
 		font-weight: 600;
-	}
-
-	/* ── Manual connections ── */
-	.conexion-list {
-		display: grid;
-		grid-template-columns: 1fr;
-		gap: 8px;
-	}
-	@media (min-width: 768px) {
-		.conexion-list {
-			grid-template-columns: repeat(2, 1fr);
-			gap: 10px;
-		}
-	}
-	@media (min-width: 1280px) {
-		.conexion-list {
-			grid-template-columns: repeat(3, 1fr);
-		}
-	}
-	.conexion-card {
-		background: var(--bg-surface);
-		border: 1px solid var(--border);
-		border-radius: 10px;
-		padding: 12px 14px;
-	}
-	.conexion-pair {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		flex-wrap: wrap;
-	}
-	.conexion-cita {
-		font-family: var(--font-mono);
-		font-size: 0.8125rem;
-	}
-	.conexion-arrow {
-		color: var(--text-muted);
-	}
-	.conexion-etiqueta {
-		display: inline-block;
-		margin-top: 6px;
-		font-family: var(--font-mono);
-		font-size: 0.6875rem;
-		padding: 2px 6px;
-		border-radius: 4px;
-		background: var(--bg-elevated);
-		color: var(--accent);
-	}
-	.conexion-comentario {
-		font-size: 0.875rem;
-		color: var(--text-secondary);
-		margin-top: 4px;
-	}
-	.btn-delete-sm {
-		margin-top: 8px;
-		font-family: var(--font-mono);
-		font-size: 0.6875rem;
-		color: var(--error);
-		background: none;
-		border: 1px solid var(--error);
-		border-radius: 4px;
-		padding: 2px 8px;
-		cursor: pointer;
 	}
 
 	.empty {
