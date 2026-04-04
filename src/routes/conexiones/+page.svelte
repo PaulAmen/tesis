@@ -20,6 +20,43 @@
 		citaId?: string;
 		width: number;
 		height: number;
+		color: string;
+		strokeColor: string;
+	}
+
+	// Paleta de colores para temas
+	const TEMA_COLORS = [
+		{ fill: '#5b8abd', stroke: '#7fb4f5' },  // azul
+		{ fill: '#c49a4a', stroke: '#eacb8a' },  // dorado
+		{ fill: '#9b6bbd', stroke: '#d496e5' },  // morado
+		{ fill: '#4a9a7a', stroke: '#78c5a0' },  // verde
+		{ fill: '#c46a5a', stroke: '#e88a7a' },  // coral
+		{ fill: '#5a8a9a', stroke: '#78c5cf' },  // cyan
+		{ fill: '#8a7a5a', stroke: '#c4b48a' },  // arena
+		{ fill: '#7a5a8a', stroke: '#b48ac4' },  // lavanda
+	];
+
+	function hexToRgb(hex: string): [number, number, number] {
+		const r = parseInt(hex.slice(1, 3), 16);
+		const g = parseInt(hex.slice(3, 5), 16);
+		const b = parseInt(hex.slice(5, 7), 16);
+		return [r, g, b];
+	}
+
+	function rgbToHex(r: number, g: number, b: number): string {
+		return '#' + [r, g, b].map(v => Math.round(v).toString(16).padStart(2, '0')).join('');
+	}
+
+	function mixColors(hexColors: string[]): string {
+		if (hexColors.length === 0) return '#32354f';
+		if (hexColors.length === 1) return hexColors[0];
+		const rgbs = hexColors.map(hexToRgb);
+		const avg = rgbs.reduce(
+			(acc, [r, g, b]) => [acc[0] + r, acc[1] + g, acc[2] + b],
+			[0, 0, 0]
+		);
+		const n = rgbs.length;
+		return rgbToHex(avg[0] / n, avg[1] / n, avg[2] / n);
 	}
 	interface GraphEdge {
 		from: string;
@@ -69,11 +106,29 @@
 		const newNodes: GraphNode[] = [];
 		const newEdges: GraphEdge[] = [];
 		const citaNodeIds = new Set<string>();
+		// Map tema -> color index, and cita -> list of tema colors
+		const temaColorMap = new Map<string, { fill: string; stroke: string }>();
+		const citaColorsMap = new Map<string, string[]>();
 
 		const temas = Array.from(temaMap.entries()).filter(([, c]) => c.length >= 1);
 		const cx = canvasW / 2;
 		const cy = canvasH / 2;
 		const temaRadius = Math.min(canvasW, canvasH) * 0.22;
+
+		// Assign colors to temas
+		temas.forEach(([tema], i) => {
+			temaColorMap.set(tema, TEMA_COLORS[i % TEMA_COLORS.length]);
+		});
+
+		// Collect colors per cita
+		for (const cita of $citasStore) {
+			const colors: string[] = [];
+			for (const tema of cita.temas) {
+				const tc = temaColorMap.get(tema);
+				if (tc) colors.push(tc.fill);
+			}
+			if (colors.length > 0) citaColorsMap.set(cita.id, colors);
+		}
 
 		temas.forEach(([tema, citas], i) => {
 			const angle = (2 * Math.PI * i) / temas.length - Math.PI / 2;
@@ -81,6 +136,7 @@
 			const defaultTy = cy + temaRadius * Math.sin(angle);
 			const temaId = `tema_${tema}`;
 			const saved = savedPositions.get(temaId);
+			const tc = temaColorMap.get(tema)!;
 
 			newNodes.push({
 				id: temaId,
@@ -90,7 +146,9 @@
 				x: saved?.x ?? defaultTx,
 				y: saved?.y ?? defaultTy,
 				width: 180,
-				height: 100
+				height: 100,
+				color: tc.fill,
+				strokeColor: tc.stroke
 			});
 
 			const citaRadius = 140 + citas.length * 18;
@@ -105,6 +163,15 @@
 					const defaultCy = ty + citaRadius * Math.sin(ca);
 					const savedCita = savedPositions.get(cNodeId);
 					const apaLabel = `(${formatAutoresCorto(cita.autores)}, ${cita.año})`;
+					const citaColors = citaColorsMap.get(cita.id) ?? [];
+					const mixed = mixColors(citaColors);
+					// Lighten the mixed color for stroke
+					const [r, g, b] = hexToRgb(mixed);
+					const lighter = rgbToHex(
+						Math.min(255, r + 60),
+						Math.min(255, g + 60),
+						Math.min(255, b + 60)
+					);
 					newNodes.push({
 						id: cNodeId,
 						label: `${formatAutores(cita.autores)} (${cita.año})`,
@@ -114,7 +181,9 @@
 						y: savedCita?.y ?? defaultCy,
 						citaId: cita.id,
 						width: Math.max(140, apaLabel.length * 10 + 30),
-						height: 48
+						height: 48,
+						color: mixed,
+						strokeColor: lighter
 					});
 					citaNodeIds.add(cNodeId);
 				}
@@ -302,6 +371,7 @@
 							x2={to.x} y2={to.y}
 							class="edge"
 							class:edge-highlight={selectedNode === edge.from || selectedNode === edge.to}
+							style="stroke: {from.type === 'tema' ? from.strokeColor : to.strokeColor}"
 						/>
 					{/if}
 				{/each}
@@ -320,6 +390,7 @@
 								x={node.x - node.width / 2} y={node.y - node.height / 2}
 								width={node.width} height={node.height}
 								rx={node.height / 2}
+								style="fill: {node.color}; stroke: {node.strokeColor}"
 							/>
 							<foreignObject
 								x={node.x - node.width / 2} y={node.y - node.height / 2}
@@ -344,6 +415,7 @@
 								x={node.x - node.width / 2} y={node.y - node.height / 2}
 								width={node.width} height={node.height}
 								rx={node.height / 2}
+								style="fill: {node.color}22; stroke: {node.strokeColor}"
 							/>
 							<foreignObject
 								x={node.x - node.width / 2} y={node.y - node.height / 2}
@@ -505,44 +577,35 @@
 
 	/* Edges */
 	.edge {
-		stroke: var(--border-bright);
 		stroke-width: 2;
-		opacity: 0.5;
+		opacity: 0.4;
 	}
 	.edge-highlight {
-		stroke: var(--accent);
 		stroke-width: 3;
-		opacity: 1;
+		opacity: 0.9;
 	}
 
 	/* Tema nodes */
 	.node-tema rect {
-		fill: var(--accent-dim);
-		stroke: var(--accent);
 		stroke-width: 2.5;
 		cursor: grab;
 		filter: drop-shadow(0 4px 12px rgba(0,0,0,0.4));
-		transition: fill 0.15s;
+		transition: filter 0.15s, opacity 0.15s;
 	}
 	.node-tema:hover rect,
 	.node-tema.selected rect {
-		fill: var(--accent);
-		filter: drop-shadow(0 4px 20px rgba(142, 164, 200, 0.4));
+		filter: drop-shadow(0 4px 20px rgba(142, 164, 200, 0.4)) brightness(1.2);
 	}
 	/* Cita nodes */
 	.node-cita rect {
-		fill: var(--bg-elevated);
-		stroke: var(--border-bright);
 		stroke-width: 1.5;
 		cursor: grab;
 		filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3));
-		transition: fill 0.15s, stroke 0.15s;
+		transition: filter 0.15s;
 	}
 	.node-cita:hover rect,
 	.node-cita.selected rect {
-		fill: var(--bg-hover);
-		stroke: var(--accent-dim);
-		filter: drop-shadow(0 2px 12px rgba(142, 164, 200, 0.3));
+		filter: drop-shadow(0 2px 12px rgba(142, 164, 200, 0.3)) brightness(1.3);
 	}
 	/* Detail panel - overlay */
 	.detail-panel {
