@@ -78,18 +78,50 @@
 
 	let selectedNode = $state<string | null>(null);
 
-	// Posiciones guardadas: sobreviven rebuilds
-	const savedPositions = new Map<string, { x: number; y: number }>();
+	// Persistencia de posiciones en localStorage
+	const storageKey = 'tesis_graph_positions';
+	let savedPositions = new Map<string, { x: number; y: number }>();
+	// Use a plain array + manual tick to avoid $state reactivity issues during drag
+	let rawNodes: GraphNode[] = [];
+
+	function syncNodes() {
+		nodes = [...rawNodes];
+	}
+
+	function loadPositions() {
+		try {
+			const stored = localStorage.getItem(storageKey);
+			if (stored) {
+				const data = JSON.parse(stored);
+				savedPositions = new Map(Object.entries(data));
+			}
+		} catch (e) {
+			console.error('Error cargando posiciones:', e);
+		}
+	}
+
+	function persistPositions() {
+		try {
+			const data = Object.fromEntries(savedPositions);
+			localStorage.setItem(storageKey, JSON.stringify(data));
+		} catch (e) {
+			console.error('Error persistiendo posiciones:', e);
+		}
+	}
 
 	function savePositions() {
-		for (const n of nodes) {
+		for (const n of rawNodes) {
 			savedPositions.set(n.id, { x: n.x, y: n.y });
 		}
+		persistPositions();
 	}
 
 	// Build graph from citas
 	function buildGraph() {
-		savePositions();
+		// Antes de reconstruir, guardamos lo que tenemos si ya hay nodos
+		if (rawNodes.length > 0) {
+			savePositions();
+		}
 
 		const temaMap = new Map<string, Cita[]>();
 		for (const cita of $citasStore) {
@@ -187,7 +219,8 @@
 			});
 		});
 
-		nodes = newNodes;
+		rawNodes = newNodes;
+		nodes = [...newNodes];
 		edges = newEdges;
 	}
 
@@ -213,7 +246,11 @@
 		}
 	}
 
+	// Track citas count to detect real changes
+	let lastCitasIds = '';
+
 	onMount(() => {
+		loadPositions();
 		const fsHandler = () => {
 			isFullScreen = !!document.fullscreenElement;
 			tick().then(resize);
@@ -221,6 +258,7 @@
 		document.addEventListener('fullscreenchange', fsHandler);
 		resize();
 		buildGraph();
+		lastCitasIds = $citasStore.map(c => c.id).join(',');
 		window.addEventListener('resize', resize);
 		return () => {
 			window.removeEventListener('resize', resize);
@@ -228,12 +266,13 @@
 		};
 	});
 
-	// Rebuild when citas change
+	// Only rebuild when citas actually change (added/removed)
 	$effect(() => {
-		$citasStore;
-		untrack(() => {
-			if (canvasW > 0) buildGraph();
-		});
+		const ids = $citasStore.map(c => c.id).join(',');
+		if (ids !== lastCitasIds) {
+			lastCitasIds = ids;
+			untrack(() => buildGraph());
+		}
 	});
 
 	function svgPoint(clientX: number, clientY: number) {
@@ -244,39 +283,50 @@
 		};
 	}
 
-	function onPointerDown(e: PointerEvent, nodeId: string) {
+	function onNodePointerDown(e: PointerEvent, nodeId: string) {
 		e.stopPropagation();
 		e.preventDefault();
 		const pt = svgPoint(e.clientX, e.clientY);
-		const node = nodes.find(n => n.id === nodeId);
+		const node = rawNodes.find(n => n.id === nodeId);
 		if (!node) return;
 		dragging = nodeId;
 		selectedNode = nodeId;
 		dragOffset = { x: pt.x - node.x, y: pt.y - node.y };
-		(e.target as Element).setPointerCapture(e.pointerId);
+		document.addEventListener('pointermove', onDocPointerMove);
+		document.addEventListener('pointerup', onDocPointerUp);
 	}
 
-	function onPointerMove(e: PointerEvent) {
-		if (dragging) {
-			const pt = svgPoint(e.clientX, e.clientY);
-			const idx = nodes.findIndex(n => n.id === dragging);
-			if (idx >= 0) {
-				nodes[idx].x = pt.x - dragOffset.x;
-				nodes[idx].y = pt.y - dragOffset.y;
-			}
-		} else if (isPanning) {
+	function onDocPointerMove(e: PointerEvent) {
+		if (!dragging) return;
+		e.preventDefault();
+		const pt = svgPoint(e.clientX, e.clientY);
+		const newX = pt.x - dragOffset.x;
+		const newY = pt.y - dragOffset.y;
+		const node = rawNodes.find(n => n.id === dragging);
+		if (node) {
+			node.x = newX;
+			node.y = newY;
+			savedPositions.set(dragging, { x: newX, y: newY });
+			syncNodes();
+		}
+	}
+
+	function onDocPointerUp() {
+		dragging = null;
+		persistPositions();
+		document.removeEventListener('pointermove', onDocPointerMove);
+		document.removeEventListener('pointerup', onDocPointerUp);
+	}
+
+	function onSvgPointerMove(e: PointerEvent) {
+		if (isPanning) {
 			const dx = (e.clientX - panStart.x) * (viewBox.w / canvasW);
 			const dy = (e.clientY - panStart.y) * (viewBox.h / canvasH);
 			viewBox = { ...viewBox, x: panStart.vx - dx, y: panStart.vy - dy };
 		}
 	}
 
-	function onPointerUp() {
-		if (dragging) {
-			const node = nodes.find(n => n.id === dragging);
-			if (node) savedPositions.set(node.id, { x: node.x, y: node.y });
-		}
-		dragging = null;
+	function onSvgPointerUp() {
 		isPanning = false;
 	}
 
@@ -334,8 +384,8 @@
 				viewBox="{viewBox.x} {viewBox.y} {viewBox.w} {viewBox.h}"
 				class="graph-svg"
 				style="height: {isFullScreen ? '100vh' : canvasH + 'px'}"
-				onpointermove={onPointerMove}
-				onpointerup={onPointerUp}
+				onpointermove={onSvgPointerMove}
+				onpointerup={onSvgPointerUp}
 				onpointerdown={onBgPointerDown}
 				onwheel={onWheel}
 			>
@@ -360,7 +410,7 @@
 						<g
 							class="node-tema"
 							class:selected={selectedNode === node.id}
-							onpointerdown={(e) => onPointerDown(e, node.id)}
+							onpointerdown={(e) => onNodePointerDown(e, node.id)}
 							role="button"
 							tabindex="-1"
 						>
@@ -384,7 +434,7 @@
 						<g
 							class="node-cita"
 							class:selected={selectedNode === node.id}
-							onpointerdown={(e) => onPointerDown(e, node.id)}
+							onpointerdown={(e) => onNodePointerDown(e, node.id)}
 							ondblclick={() => { if (node.citaId) window.location.href = `${base}/citas/${node.citaId}`; }}
 							role="button"
 							tabindex="-1"
