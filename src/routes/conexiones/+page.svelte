@@ -73,7 +73,7 @@
 		const temas = Array.from(temaMap.entries()).filter(([, c]) => c.length >= 1);
 		const cx = canvasW / 2;
 		const cy = canvasH / 2;
-		const temaRadius = Math.min(canvasW, canvasH) * 0.35;
+		const temaRadius = Math.min(canvasW, canvasH) * 0.22;
 
 		temas.forEach(([tema, citas], i) => {
 			const angle = (2 * Math.PI * i) / temas.length - Math.PI / 2;
@@ -93,7 +93,7 @@
 				height: 100
 			});
 
-			const citaRadius = 260 + citas.length * 35;
+			const citaRadius = 140 + citas.length * 18;
 			const tx = saved?.x ?? defaultTx;
 			const ty = saved?.y ?? defaultTy;
 
