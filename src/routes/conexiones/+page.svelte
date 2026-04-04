@@ -583,10 +583,11 @@
 	/* Detail panel - overlay */
 	.detail-panel {
 		position: absolute;
-		bottom: 16px;
+		top: 16px;
 		left: 16px;
-		right: 16px;
 		max-width: 420px;
+		max-height: calc(100% - 32px);
+		overflow-y: auto;
 		padding: 18px 22px;
 		background: var(--bg-surface);
 		border: 1px solid var(--border);
