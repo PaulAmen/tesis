@@ -25,6 +25,13 @@ const LATEX_SPECIAL: Record<string, string> = {
 function cleanLatex(str: string): string {
 	let result = str;
 
+	// Handle accent + \i (dotless i) and \j before anything else
+	// e.g. {\'\i} -> í, {\"{\i}} -> ï
+	result = result.replace(/\{\\([`'^"~=.v])\\i\}/g, (_, cmd) => LATEX_MAP[cmd]?.['i'] ?? 'i');
+	result = result.replace(/\{\\([`'^"~=.v])\{\\i\}\}/g, (_, cmd) => LATEX_MAP[cmd]?.['i'] ?? 'i');
+	result = result.replace(/\\([`'^"~=.v])\\i(?![a-zA-Z])/g, (_, cmd) => LATEX_MAP[cmd]?.['i'] ?? 'i');
+	result = result.replace(/\\([`'^"~=.v])\\j(?![a-zA-Z])/g, (_, cmd) => LATEX_MAP[cmd]?.['j'] ?? 'j');
+
 	// Replace special commands: \aa, \ss, etc.
 	for (const [cmd, ch] of Object.entries(LATEX_SPECIAL)) {
 		result = result.replaceAll(cmd, ch);
