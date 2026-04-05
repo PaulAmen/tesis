@@ -505,8 +505,9 @@
 	.graph-toolbar {
 		display: flex;
 		align-items: center;
-		gap: 12px;
+		gap: 8px;
 		margin-bottom: 10px;
+		flex-wrap: wrap;
 	}
 	.btn-tool {
 		font-family: var(--font-mono);
@@ -526,6 +527,11 @@
 		font-family: var(--font-mono);
 		font-size: 0.6875rem;
 		color: var(--text-muted);
+	}
+	@media (max-width: 480px) {
+		.hint {
+			display: none;
+		}
 	}
 	.graph-container {
 		position: relative;
@@ -583,17 +589,26 @@
 	/* Detail panel - overlay */
 	.detail-panel {
 		position: absolute;
-		top: 16px;
-		left: 16px;
-		max-width: 420px;
-		max-height: calc(100% - 32px);
+		top: 8px;
+		left: 8px;
+		right: 8px;
+		max-height: calc(100% - 16px);
 		overflow-y: auto;
-		padding: 18px 22px;
+		padding: 16px;
 		background: var(--bg-surface);
 		border: 1px solid var(--border);
 		border-radius: var(--radius-md);
 		box-shadow: var(--shadow-lg);
 		z-index: 10;
+	}
+	@media (min-width: 480px) {
+		.detail-panel {
+			top: 16px;
+			left: 16px;
+			right: auto;
+			max-width: 420px;
+			padding: 18px 22px;
+		}
 	}
 	.panel-close {
 		position: absolute;

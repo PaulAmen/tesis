@@ -680,10 +680,16 @@
 
 <style>
 	h1 {
-		font-size: 2.25rem;
+		font-size: 1.5rem;
 		font-weight: 700;
 		letter-spacing: -0.03em;
-		margin-bottom: 24px;
+		margin-bottom: 20px;
+	}
+	@media (min-width: 480px) {
+		h1 {
+			font-size: 2.25rem;
+			margin-bottom: 24px;
+		}
 	}
 	.seccion-selector {
 		margin-bottom: 32px;
@@ -745,9 +751,11 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
+		gap: 12px;
 		margin-bottom: 20px;
 		padding-bottom: 12px;
 		border-bottom: 2px solid var(--border);
+		flex-wrap: wrap;
 	}
 	.section-header-actions {
 		display: flex;
@@ -826,10 +834,16 @@
 	.editor {
 		margin-top: 16px;
 		background: var(--bg-surface);
-		padding: 24px;
-		border-radius: var(--radius-lg);
+		padding: 16px;
+		border-radius: var(--radius-md);
 		border: 1px solid var(--border);
 		box-shadow: var(--shadow-lg);
+	}
+	@media (min-width: 480px) {
+		.editor {
+			padding: 24px;
+			border-radius: var(--radius-lg);
+		}
 	}
 	.editor-header {
 		display: flex;
@@ -850,19 +864,43 @@
 		font-weight: 600;
 	}
 	.editor-textarea {
-		min-height: 600px;
-		padding: 28px;
-		font-size: 1.15rem;
-		line-height: 1.8;
+		min-height: 300px;
+		padding: 16px;
+		font-size: 1rem;
+		line-height: 1.7;
 		background: var(--bg-base);
 		border: 1.5px solid var(--border);
 	}
+	@media (min-width: 480px) {
+		.editor-textarea {
+			min-height: 600px;
+			padding: 28px;
+			font-size: 1.15rem;
+			line-height: 1.8;
+		}
+	}
 	.editor-actions {
 		display: flex;
-		gap: 12px;
+		gap: 8px;
 		flex-wrap: wrap;
 		margin-bottom: 24px;
-		justify-content: flex-end;
+	}
+	@media (min-width: 480px) {
+		.editor-actions {
+			gap: 12px;
+			justify-content: flex-end;
+		}
+	}
+	@media (max-width: 480px) {
+		.editor-actions .btn,
+		.editor-actions .btn-outline {
+			flex: 1 1 calc(50% - 4px);
+			min-width: 0;
+			padding: 10px 8px;
+			font-size: 0.8rem;
+			text-align: center;
+			justify-content: center;
+		}
 	}
 	.btn {
 		padding: 12px 24px;
@@ -979,13 +1017,26 @@
 	}
 	.cita-options-form .field-row {
 		display: flex;
-		gap: 16px;
+		flex-direction: column;
+		gap: 12px;
 		margin-bottom: 16px;
+	}
+	@media (min-width: 480px) {
+		.cita-options-form .field-row {
+			flex-direction: row;
+			gap: 16px;
+		}
 	}
 	.cita-types-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-		gap: 10px;
+		grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+		gap: 8px;
+	}
+	@media (min-width: 480px) {
+		.cita-types-grid {
+			grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+			gap: 10px;
+		}
 	}
 	.btn-option {
 		display: flex;

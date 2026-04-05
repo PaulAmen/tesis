@@ -100,11 +100,16 @@
 
 <style>
 	h1 {
-		font-size: 2.5rem;
+		font-size: 1.6rem;
 		font-weight: 900;
 		margin-bottom: 8px;
 		letter-spacing: -0.05em;
 		color: var(--text-primary);
+	}
+	@media (min-width: 480px) {
+		h1 {
+			font-size: 2.5rem;
+		}
 	}
 	.subtitle {
 		font-family: var(--font-mono);
@@ -127,9 +132,10 @@
 	}
 	.consulta-card {
 		display: flex;
-		flex-direction: column;
-		gap: 24px;
-		padding: 32px;
+		flex-direction: row;
+		align-items: center;
+		gap: 16px;
+		padding: 20px;
 		background: var(--bg-surface);
 		border: 1px solid var(--border);
 		border-radius: var(--radius-lg);
@@ -139,6 +145,13 @@
 		transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 		width: 100%;
 		box-shadow: var(--shadow-sm);
+	}
+	@media (min-width: 480px) {
+		.consulta-card {
+			flex-direction: column;
+			gap: 24px;
+			padding: 32px;
+		}
 	}
 	.consulta-card:hover {
 		border-color: var(--border-bright);
@@ -153,8 +166,9 @@
 	}
 	.consulta-icon {
 		background: var(--bg-elevated);
-		width: 56px;
-		height: 56px;
+		width: 44px;
+		height: 44px;
+		min-width: 44px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -162,6 +176,13 @@
 		border: 1px solid var(--border);
 		color: var(--accent);
 		transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+	}
+	@media (min-width: 480px) {
+		.consulta-icon {
+			width: 56px;
+			height: 56px;
+			min-width: 56px;
+		}
 	}
 	.consulta-card:hover .consulta-icon {
 		transform: scale(1.1) rotate(5deg);
@@ -183,10 +204,16 @@
 	.result-box {
 		background: var(--bg-surface);
 		border: 1px solid var(--border-bright);
-		border-radius: var(--radius-lg);
-		padding: 40px;
+		border-radius: var(--radius-md);
+		padding: 20px;
 		box-shadow: var(--shadow-lg);
 		position: relative;
+	}
+	@media (min-width: 480px) {
+		.result-box {
+			padding: 40px;
+			border-radius: var(--radius-lg);
+		}
 	}
 	.result-header {
 		display: flex;

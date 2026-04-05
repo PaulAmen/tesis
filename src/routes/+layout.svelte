@@ -111,6 +111,7 @@
 		-webkit-font-smoothing: antialiased;
 		min-height: 100vh;
 		overflow-x: hidden;
+		-webkit-text-size-adjust: 100%;
 	}
 
 	:global(h1, h2, h3, h4) {
@@ -148,14 +149,22 @@
 		background: var(--bg-surface);
 		color: var(--text-primary);
 		border: 1px solid var(--border);
-		border-radius: var(--radius-md);
-		padding: 14px 18px;
-		font-size: 0.95rem;
+		border-radius: var(--radius-sm);
+		padding: 12px 14px;
+		font-size: 0.9rem;
 		width: 100%;
 		outline: none;
 		backdrop-filter: blur(10px);
 		-webkit-backdrop-filter: blur(10px);
 		transition: all 0.3s ease;
+	}
+
+	@media (min-width: 480px) {
+		:global(input, textarea, select) {
+			border-radius: var(--radius-md);
+			padding: 14px 18px;
+			font-size: 0.95rem;
+		}
 	}
 
 	:global(input:focus, textarea:focus, select:focus) {
@@ -204,7 +213,15 @@
 	}
 
 	.content {
-		padding: 24px 20px 100px;
+		padding: 20px 16px 100px;
+		padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px));
+	}
+
+	@media (min-width: 480px) {
+		.content {
+			padding: 24px 20px 100px;
+			padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px));
+		}
 	}
 
 	@media (min-width: 768px) {

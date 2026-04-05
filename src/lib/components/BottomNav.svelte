@@ -102,18 +102,25 @@
 	}
 	@media (max-width: 480px) {
 		.bottom-nav {
-			bottom: 12px;
+			bottom: calc(8px + env(safe-area-inset-bottom, 0px));
 		}
 		.nav-container {
-			gap: 4px;
+			gap: 2px;
 			padding: 6px;
 			border-radius: var(--radius-md);
-			width: 95%;
+			width: 96%;
+			max-width: 400px;
 		}
 		.nav-item {
-			padding: 8px 4px;
-			min-width: 60px;
+			padding: 8px 2px;
+			min-width: 0;
+			flex: 1;
 			font-size: 0.55rem;
+			letter-spacing: 0.02em;
+		}
+		.nav-item svg {
+			width: 20px;
+			height: 20px;
 		}
 	}
 </style>

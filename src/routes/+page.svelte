@@ -130,18 +130,28 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		margin-bottom: 32px;
+		margin-bottom: 24px;
+		gap: 12px;
 	}
 	.header-actions {
 		display: flex;
 		align-items: center;
-		gap: 16px;
+		gap: 12px;
+		flex-shrink: 0;
 	}
 	h1 {
-		font-size: 2.2rem;
+		font-size: 1.5rem;
 		font-weight: 900;
 		letter-spacing: -0.04em;
 		color: var(--text-primary);
+	}
+	@media (min-width: 480px) {
+		h1 {
+			font-size: 2.2rem;
+		}
+		.page-header {
+			margin-bottom: 32px;
+		}
 	}
 	.text-accent {
 		color: var(--accent);
@@ -149,17 +159,22 @@
 	.btn-import-bib {
 		display: flex;
 		align-items: center;
-		gap: 8px;
-		padding: 10px 16px;
+		gap: 6px;
+		padding: 8px 12px;
 		background: var(--bg-surface);
 		border: 1px solid var(--border);
 		border-radius: var(--radius-md);
 		color: var(--text-secondary);
 		cursor: pointer;
 		font-family: var(--font-mono);
-		font-size: 0.8rem;
+		font-size: 0.75rem;
 		font-weight: 700;
 		transition: all 0.2s;
+	}
+	@media (max-width: 480px) {
+		.btn-import-bib span {
+			display: none;
+		}
 	}
 	.btn-import-bib:hover {
 		border-color: var(--accent-dim);
@@ -170,8 +185,8 @@
 		display: none;
 	}
 	.fab {
-		width: 60px;
-		height: 60px;
+		width: 48px;
+		height: 48px;
 		border-radius: var(--radius-lg);
 		background: var(--accent);
 		color: #121212;
@@ -181,6 +196,13 @@
 		text-decoration: none;
 		box-shadow: var(--shadow-md);
 		transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+		flex-shrink: 0;
+	}
+	@media (min-width: 480px) {
+		.fab {
+			width: 60px;
+			height: 60px;
+		}
 	}
 	.fab:hover {
 		transform: scale(1.1) translateY(-4px) rotate(90deg);
@@ -198,17 +220,29 @@
 	}
 	.search-icon {
 		position: absolute;
-		left: 20px;
+		left: 16px;
 		color: var(--text-muted);
 		pointer-events: none;
 	}
+	@media (min-width: 480px) {
+		.search-icon {
+			left: 20px;
+		}
+	}
 	.search-box input {
-		padding-left: 56px;
-		height: 64px;
-		font-size: 1.05rem;
+		padding-left: 48px;
+		height: 52px;
+		font-size: 0.95rem;
 		background: var(--bg-surface);
 		border: 1px solid var(--border);
 		box-shadow: var(--shadow-sm);
+	}
+	@media (min-width: 480px) {
+		.search-box input {
+			padding-left: 56px;
+			height: 64px;
+			font-size: 1.05rem;
+		}
 	}
 	.search-box input:focus {
 		border-color: var(--accent-dim);
@@ -244,13 +278,18 @@
 		background: var(--bg-surface);
 		border: 1.5px solid var(--border);
 		border-radius: var(--radius-lg);
-		padding: 28px;
+		padding: 18px;
 		text-decoration: none;
 		color: inherit;
 		transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 		position: relative;
 		overflow: hidden;
 		box-shadow: var(--shadow-sm);
+	}
+	@media (min-width: 480px) {
+		.cita-card {
+			padding: 28px;
+		}
 	}
 	.cita-card:hover {
 		border-color: var(--border-bright);
@@ -269,20 +308,25 @@
 	}
 	.cita-autor {
 		font-family: var(--font-mono);
-		font-size: 0.85rem;
+		font-size: 0.75rem;
 		font-weight: 700;
 		color: var(--accent);
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
+	}
+	@media (min-width: 480px) {
+		.cita-autor {
+			font-size: 0.85rem;
+		}
 	}
 	.separator {
 		color: var(--text-muted);
 		margin: 0 4px;
 	}
 	.cita-titulo {
-		font-size: 1.2rem;
-		line-height: 1.5;
-		margin-bottom: 24px;
+		font-size: 1rem;
+		line-height: 1.45;
+		margin-bottom: 16px;
 		font-weight: 700;
 		color: var(--text-primary);
 		display: -webkit-box;
@@ -291,6 +335,13 @@
 		overflow: hidden;
 		position: relative;
 		z-index: 1;
+	}
+	@media (min-width: 480px) {
+		.cita-titulo {
+			font-size: 1.2rem;
+			line-height: 1.5;
+			margin-bottom: 24px;
+		}
 	}
 	.tags {
 		margin-top: auto;

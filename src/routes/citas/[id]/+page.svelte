@@ -493,9 +493,15 @@
 		background: var(--bg-surface);
 		border: 2px solid var(--border);
 		border-radius: var(--radius-md);
-		padding: 24px;
-		margin-bottom: 32px;
+		padding: 18px;
+		margin-bottom: 24px;
 		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+	}
+	@media (min-width: 480px) {
+		.detail-card {
+			padding: 24px;
+			margin-bottom: 32px;
+		}
 	}
 	.meta-row {
 		display: flex;
@@ -510,11 +516,16 @@
 		font-weight: 500;
 	}
 	h1 {
-		font-size: 1.5rem;
+		font-size: 1.25rem;
 		line-height: 1.35;
 		margin-bottom: 8px;
 		font-weight: 700;
 		letter-spacing: -0.01em;
+	}
+	@media (min-width: 480px) {
+		h1 {
+			font-size: 1.5rem;
+		}
 	}
 	.autor {
 		font-size: 1.125rem;
@@ -538,15 +549,24 @@
 		letter-spacing: 0.05em;
 	}
 	blockquote {
-		border-left: 6px solid var(--accent);
-		padding: 16px 20px;
-		margin: 20px 0;
+		border-left: 4px solid var(--accent);
+		padding: 12px 16px;
+		margin: 16px 0;
 		background: var(--bg-elevated);
 		border-radius: var(--radius-sm);
 		font-style: italic;
-		font-size: 1.0625rem;
-		line-height: 1.7;
+		font-size: 0.95rem;
+		line-height: 1.6;
 		color: var(--text-primary);
+	}
+	@media (min-width: 480px) {
+		blockquote {
+			border-left-width: 6px;
+			padding: 16px 20px;
+			margin: 20px 0;
+			font-size: 1.0625rem;
+			line-height: 1.7;
+		}
 	}
 	.tags {
 		display: flex;
@@ -812,9 +832,19 @@
 
 	.ia-buttons {
 		display: flex;
-		gap: 10px;
+		gap: 8px;
 		flex-wrap: wrap;
 		margin-bottom: 16px;
+	}
+	@media (max-width: 480px) {
+		.ia-buttons .btn-outline {
+			flex: 1;
+			min-width: 0;
+			padding: 10px 8px;
+			font-size: 0.8rem;
+			text-align: center;
+			justify-content: center;
+		}
 	}
 	.ia-result {
 		background: var(--bg-surface);

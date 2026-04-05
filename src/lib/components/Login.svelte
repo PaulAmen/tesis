@@ -69,12 +69,17 @@
 		width: 100%;
 		max-width: 440px;
 		text-align: center;
-		padding: 56px 40px;
+		padding: 40px 24px;
 		background: var(--bg-surface);
 		border: 1px solid var(--border-bright);
 		border-radius: var(--radius-lg);
 		box-shadow: var(--shadow-lg);
 		animation: cardEntry 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+	}
+	@media (min-width: 480px) {
+		.login-card {
+			padding: 56px 40px;
+		}
 	}
 	@keyframes cardEntry {
 		from { opacity: 0; transform: translateY(20px) scale(0.98); }
@@ -84,11 +89,16 @@
 		margin-bottom: 48px;
 	}
 	h1 {
-		font-size: 3.5rem;
+		font-size: 2.5rem;
 		font-weight: 900;
 		margin-bottom: 12px;
 		letter-spacing: -0.05em;
 		color: var(--text-primary);
+	}
+	@media (min-width: 480px) {
+		h1 {
+			font-size: 3.5rem;
+		}
 	}
 	.subtitle {
 		color: var(--text-secondary);

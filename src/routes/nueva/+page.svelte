@@ -264,7 +264,7 @@
 		font-weight: 600;
 	}
 	.btn-primary {
-		padding: 12px;
+		padding: 14px;
 		border-radius: 10px;
 		font-size: 1rem;
 		font-weight: 600;
@@ -274,6 +274,7 @@
 		cursor: pointer;
 		font-family: var(--font-sans);
 		margin-top: 8px;
+		min-height: 48px;
 	}
 	.btn-primary:disabled {
 		opacity: 0.5;
